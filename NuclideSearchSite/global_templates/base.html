@@ -1,0 +1,125 @@
+<!-- NuclideSearch, A web application for finding nuclear data.
+Copyright (C) 2016  Jonas Nilsson
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>{% block title %}NuclideSearch{% endblock %}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="nuclear data">
+		<meta name="author" content="Jonas Nilsson">
+
+		<!-- Le styles -->
+		<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet">
+		<link href="/static/bootstrap/css/bootstrap-theme.css" rel="stylesheet">
+		<link href="/static/bootstrap/css/bootstrap-sortable.css" rel="stylesheet">
+		<link href="/static/css/generic_styling.css" rel="stylesheet">
+		{% block style %}
+		{% endblock %}
+		<style type="text/css">
+		
+		body {
+		  min-height: 500px;
+		  padding-top: 70px;
+		}
+			
+			.sidebar-nav {
+				padding: 9px 0;
+			}
+
+			@media (max-width: 980px) {
+				/* Enable use of floated navbar text */
+				.navbar-text.pull-right {
+					float: none;
+					padding-left: 5px;
+					padding-right: 5px;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+
+	    <div class="navbar navbar-default navbar-fixed-top">
+	      <div class="container">
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand" href="/">NuclearSearch</a>
+	        </div>
+	        <div class="navbar-collapse collapse">
+	          <ul class="nav navbar-nav">
+	            <!-- <li class="active"><a href="/">Home</a></li> -->
+				<li><a href="/">Home</a></li>
+	            <li><a href="/about/">About</a></li>
+	            <li class="dropdown">
+	              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Recent nuclides <b class="caret"></b></a>
+	              <ul id="recent_nuclides" class="dropdown-menu">
+	              </ul>
+	            </li>
+	            <li class="dropdown">
+	              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Popular nuclides <b class="caret"></b></a>
+	              <ul class="dropdown-menu">
+	                <!-- <li><a href="#">Tc-99m</a></li>
+					<li><a href="#">Co-60</a></li>
+					<li><a href="#">Cs-137</a></li> -->
+	              </ul>
+	            </li>
+	          </ul>
+	          <ul class="nav navbar-nav navbar-right">
+	            <li><a href="/adv_search/">Adv. search</a></li>
+	          </ul>
+	        </div><!--/.nav-collapse -->
+	      </div>
+	    </div>
+		
+	    <div class="container">
+
+	      <!-- Main component for a primary marketing message or call to action -->
+	      
+			{% block content%}
+			{% endblock %}
+	    </div>
+		{% block modal_block %}
+		
+		{% endblock %}
+	</body>
+	<script src="/static/jquery/jquery-1.9.1.min.js"></script>
+	<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+	<script src="/static/bootstrap/js/bootstrap-sortable.js"></script>
+	<script src="/static/bootstrap/js/typeahead.min.js"></script>
+	
+	{% block end_script%}
+	
+	{% endblock %}
+	
+	<script>
+	var menu = document.getElementById("recent_nuclides");
+	for (var i = 0; i < 5; i++) {
+		if (localStorage.getItem("recent_name_" + i) == null) {
+			break;
+		} else {
+			menu.innerHTML = menu.innerHTML + "<li><a href=\"/show_nuclide/" + localStorage.getItem("recent_id_" + i) + "/\">" + localStorage.getItem("recent_name_" + i) + "</a></li>";
+		}
+		
+	}
+
+	</script>
+</html>

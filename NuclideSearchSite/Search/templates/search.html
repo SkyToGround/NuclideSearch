@@ -1,0 +1,181 @@
+<!-- NuclideSearch, A web application for finding nuclear data.
+Copyright (C) 2016  Jonas Nilsson
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
+
+{% extends "base.html" %}
+
+{% block title %}
+NuclideSearch: Search
+{% endblock %}
+
+{% block style %}
+<link href="/static/css/search_styling.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="center-cont">
+	<form action="/search/" formmethod="get" role="form" class="">
+		<input action="/search/" formmethod="get" value="{{value_str}}" id="search-field" class="typeahed" type="text" placeholder="Search term" name="query">
+		<button class="btn btn-primary search-btn-pos" type="submit">Search</button>
+	</form>
+</div>
+
+{% if isotopes|length > 0 %}
+</br>
+</br>
+<div class="well">
+<h2>Found isotopes of {{element}}</h2>
+<h6><a href="/aug_xray/{{Z}}/">Go to X-ray and Auger electron data</a></h6>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th data-defaultsort="asc">Name</th>
+				<th>Half-life</th>
+				<th class="hidden-phone">Decay mode</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for isotope in isotopes %}
+			<tr>
+				<td data-value="{{isotope.name_order}}">
+					<a href="/show_nuclide/{{isotope.iZA}}">{{isotope.name}}</a>
+				</td>
+				<td data-value="{{isotope.halflife_order}}">
+					{{isotope.halflife|safe}}
+				</td>
+				<td class="hidden-phone">
+					{{isotope.mode|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+
+{% if nuclides|length > 0 %}
+</br>
+</br>
+<div class="well">
+<h2>Found nuclides</h2>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th data-defaultsort="desc">Name</th>
+				<th>Half-life</th>
+				<th class="hidden-phone">Decay mode</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for nuclide in nuclides %}
+			<tr>
+				<td data-value="{{nuclide.name_order}}">
+					<a href="/show_nuclide/{{nuclide.iZA}}">{{nuclide.name}}</a>
+				</td>
+				<td data-value="{{nuclide.halflife_order}}">
+					{{nuclide.halflife|safe}}
+				</td>
+				<td class="hidden-phone">
+					{{nuclide.mode|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+
+{% if times|length > 0 %}
+</br>
+</br>
+<div class="well">
+<h2>{{times_desc}}</h2>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th data-defaultsort="desc">Name</th>
+				<th>Half-life</th>
+				<th class="hidden-phone">Decay mode</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for nuclide in times %}
+			<tr>
+				<td data-value="{{nuclide.name_order}}">
+					<a href="/show_nuclide/{{nuclide.iZA}}">{{nuclide.name}}</a>
+				</td>
+				<td data-value="{{nuclide.halflife_order}}">
+					{{nuclide.halflife|safe}}
+				</td>
+				<td class="hidden-phone">
+					{{nuclide.mode|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+
+{% if energies|length > 0 %}
+</br>
+</br>
+<div class="well">
+<h2>{{energies_desc}}</h2>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th data-defaultsort="desc">Name</th>
+				<th>Half-life</th>
+				<th class="hidden-phone">Decay mode</th>
+				<th>&#947; energy (keV)</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for nuclide in energies %}
+			<tr>
+				<td data-value="{{nuclide.name_order}}">
+					<a href="/show_nuclide/{{nuclide.iZA}}">{{nuclide.name}}</a>
+				</td>
+				<td data-value="{{nuclide.halflife_order}}">
+					{{nuclide.halflife|safe}}
+				</td>
+				<td class="hidden-phone">
+					{{nuclide.mode|safe}}
+				</td>
+				<td data-value="{{nuclide.gamma_order}}">
+					{{nuclide.gamma|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block end_script %}
+<script src="/static/js/Hogan.js"></script>
+<script>
+// $('.container .typeahead').typeahead({
+$('#search-field').typeahead({
+	name: 'auto_complete',
+	remote: '/auto_complete/input=%QUERY',
+	template: '{{template|safe}}',
+	limit: 10,
+	engine: Hogan,
+});
+</script>
+{% endblock %}

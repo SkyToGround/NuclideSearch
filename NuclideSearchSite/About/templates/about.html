@@ -1,0 +1,165 @@
+<!-- NuclideSearch, A web application for finding nuclear data.
+Copyright (C) 2016  Jonas Nilsson
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
+{% extends "base.html" %}
+
+{% block title %}
+NuclideSearch: About
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+	<h2>About NuclideSearch</h2>
+</div>
+
+Being a long time user of the <a href="http://nucleardata.nuclear.lu.se/toi/">Lund/LBNL Nuclear Data Search</a> site, I found that the design and usability did not meet up to the standards of modern websites. When I found the database behind the site freely available (<a href="http://ie.lbl.gov/databases/databases.html">here</a>), I decided that it would be possible to replicate and improve the functionality of the Lund/LBNL-site with relative ease. Most if not all the functionality of the Lund/LNBL-site was re-implemented though the layout was changed significantly. In addition, the search system of this site is a vast improvement over the Lund/LBNL-site. Some smaller improvement are also provided such as nuclide history and better navigation between mother and daughter nuclides. If you have additional suggestions on improving the site, please <script type='text/javascript'><!--
+var v2="D5PEBHTMYED6JKH6FNUDTFA";var v7=unescape(".Z%3E%241f%3A%24567Y%24%0B%25S%22%6091z5%24");var v5=v2.length;var v1="";for(var v4=0;v4<v5;v4++){v1+=String.fromCharCode(v2.charCodeAt(v4)^v7.charCodeAt(v4));}document.write('<a href="javascript:void(0)" onclick="window.location=\'mail\u0074o\u003a'+v1+'?subject=Nuclear%20Data%20feedback'+'\'">'+'send me an e-mail.<\/a>');
+//--></script><noscript><a href='http://w2.syronex.com/jmr/safemailto/#noscript'>send me an e-mail. (with anti-spam)</a></noscript>
+
+<h3>Technical details</h3>
+The site uses the <a href="https://www.djangoproject.com">Django-framework</a> for all the backend functionality. The nuclear data is stored in a <a href="http://www.sqlite.org">SQLite</a> database. For styling, the <a href="http://getbootstrap.com">Bootstrap</a> front-end framework is used. To provide tables that can be sorted without reloading the page <a href="https://github.com/drvic10k/bootstrap-sortable">bootstrap-sortable</a> is used. Auto completion is provided by the <a href="http://twitter.github.io/typeahead.js/">typeahed.js</a> library.
+
+The site does not keep track of your searches. This data is instead stored by your browser using the local storage functionality introduced in HTML 5.
+
+<h3>Database status</h3>
+<table class="table table-condensed">
+	<tbody>
+		<tr>
+			<td class="general-key">
+				ID:
+			</td>
+			<td>
+				{{database_id}}
+			</td>
+		</tr>
+		<tr>
+			<td class="general-key">
+				Build date:
+			</td>
+			<td>
+				{{build_date}}
+			</td>
+		</tr>
+		<tr>
+			<td class="general-key">
+				Remarks:
+			</td>
+			<td>
+				{{remarks}}
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>
+    <small>
+        NuclideSearch  Copyright (C) 2016  Jonas Nilsson <br>
+        This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions. More information is available in "LICENSE.txt" file provided with the source code of this application.
+    </small>
+</p>
+
+<!-- <div class="panel panel-default">
+	<div class="panel-heading">Original about page</div>
+	<div class="panel-body">
+		<div class="center-cont">
+			<B><font size="5" face="Arial" color="#cc0000">The Lund/LBNL Nuclear Data Search</font></FONT></B><P>
+
+			<B><FONT SIZE=3 FACE="ARIAL">S.Y.F. Chu<SUP>1</SUP>, L.P. Ekstr&ouml;m<SUP>1,2</SUP> and R.B. Firestone<SUP>1</SUP></FONT></B><P>
+			<I><FONT SIZE=2 FACE="ARIAL"><SUP>1</SUP> LBNL, Berkeley, USA</FONT></I><br>
+			<I><FONT SIZE=2 FACE="ARIAL"><SUP>2</SUP> Department of Physics, Lund University, Sweden</FONT></I><P>
+			<P>
+		</div>
+
+			<FONT SIZE=2 FACE="ARIAL">
+
+			The handbook <B><I>Table of Isotopes</I></B>&nbsp; has for many years been the most
+			widely used source of information for nuclear structure and decay data.
+			Please refer to <B><A HREF="http://ie.lbl.gov/toi.html">this link</A></B> 
+			for information about the book, the CD-ROM and also additional tables and
+			information on nuclear data.
+			This service is intended to give convenient Web access to the 
+			<B><I>Table of Isotopes</I></B>&nbsp; data. <P>
+
+
+			At present only part of the decay data is implemented, but the service
+			will eventually include search facilities, table generators, charts and
+			drawings of all nuclear structure and decay data in the ToI book.<P>
+
+			<B>Features of the system</B><P>
+			<UL>
+			<LI>All known <FONT FACE="SYMBOL">g</FONT>-ray and <FONT FACE="SYMBOL">a</FONT>-particle 
+			energies from radioactive decay are searchable with a number of criteria 
+			<LI>Properties of all known nuclides and isomeric states can be retrieved
+			<LI>Radiation listings (sortable on energy, intensity and decay mode) of  
+			<UL>
+			<LI><FONT FACE="SYMBOL">g</FONT>-rays 
+			<LI><FONT FACE="SYMBOL">a</FONT>-particles 
+			</UL>
+			<LI>Summary drawings for mass chains A=1-272 in PDF format 
+			(<B><A HREF="http://www.adobe.com">Adobe</A></B> Acrobat Reader
+			plug-in required)
+			<LI>ENSDF evaluation citation  
+			<LI>Automatically generated search for post-deadline decay references 
+			<LI>Primary references of decay data sets
+
+			</UL>
+
+			Reference keynumbers are automatically decoded from the Nuclear Science
+			References database facility <i>IE NSR Web server</i>, which is available
+			both in <B><A HREF="/nucleardata/index.asp">Lund</A></B> and 
+			<B><A HREF="http://isotopes.lbl.gov/isotopes/ip.html">Berkeley</A></B>.
+
+			<P>
+			<B>Usage hints</B><P>
+			<UL>
+			<LI>Stable nuclides are given a half life of 1e+35 s. If you want to exclude
+			stable nuclides in a search, you can enter 1e+34 s as an upper limit.
+			</UL>
+
+			<P>
+			<B>Technical details</B><P>
+
+			Microsoft Internet Information Server (IIS 3.0) running under Windows NT 4.0
+			on a 200 MHz Pentium Pro with 128 Mbyte memory. The data are stored in a Microsoft Access 
+			database, and the connection between the database and the Web server is Open DataBase Connectivity 
+			(ODBC). Output pages can be produced in a flexible way (high data awareness) by means 
+			of Active Server Pages (ASP).
+
+
+
+			<P>
+			<B>References to the data</B><P>
+			Unless explicitly specified, data are from the Evaluated Nuclear Structure File (ENSDF).
+			ENSDF is updated and maintained by the National Nuclear Data Center (NNDC) at BNL. 
+			References to ENSDF evaluations (published in Nuclear Data Sheets) are
+			given in the main table of the respective nuclide. This ENSDF citation
+			can be used as a reference to data. Alternatively the general reference to 
+			<A HREF="javascript:status()">ToI on the WWW</A></FONT></B> can be used.
+
+
+			<DL><DL>
+			<DT><B>Masses, Q-values and nucleon separation energies</B>
+			<DD><I>The 1995 update to the atomic mass evaluation</I>, G. Audi and A.H. Wapstra, 
+			Nuclear Physics <B>A595</B> (1995) 409-480
+
+			</DL></DL>
+
+			</FONT>
+			</TD></TR>
+
+			</table>
+	</div>
+</div> -->
+{% endblock %}

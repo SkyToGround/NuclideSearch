@@ -1,0 +1,134 @@
+/* custom font! */
+/* ------------ */
+
+/* scaffolding */
+/* ----------- */
+
+.nuc-table {
+	border-collapse: collapse;
+	border-spacing: 0px;
+}
+
+tr.nuc-table-space > td {
+	padding-bottom: 10mm;
+}
+
+.container {
+	max-width: 700px;
+	margin: 0 auto;
+	text-align: left;
+}
+
+.int_font {
+	font-size: 11px;
+	font-style:italic;
+}
+
+.general-key {
+	font-weight:bold;
+}
+
+.center-cont {
+  text-align: center;
+}
+
+.close-button {
+  float: right;
+}
+
+.close-button:hover {
+	color:red;
+}
+
+.nuc-sm-nr_1 {
+	font-size: 18px;
+	text-align: right;
+}
+
+.nuc-sm-nr_2 {
+	font-size: 18px;
+	text-align: left;
+}
+
+.nuc-symb {
+	font-size: 36px;
+}
+
+.footer-style {
+	text-align: center;
+	margin-top: 0.5cm;
+}
+
+.nonmetal {
+	background:#e7ff8f;
+}
+
+.noblegas {
+	background:#c0ffff;
+}
+
+.alkali {
+	background:#ff6666;
+}
+
+.alkaline {
+	background:#ffdead;
+}
+
+.lanth {
+	background:#ffbfff;
+}
+
+.acti {
+	background:#ff99cc;
+}
+
+.trans {
+	background:#ffc0c0;
+}
+
+.metoid {
+	background:#cccc99;
+}
+
+.poor {
+	background:#cccccc;
+}
+
+.poly {
+	background:#a1ffc3;
+}
+
+.unkn {
+	background:#e8e8e8;
+}
+
+.lanth {
+	background:#ffbfff;
+}
+
+table {
+	margin:0 auto;
+	border-spacing: 5px;
+    border-collapse: separate;
+}
+
+
+
+.elem_cell {
+	width: 0.8cm;
+	height: 0.8cm;
+	line-height:1.1em;
+	text-align:center;
+	border:2px solid #000000;
+	font-size: 16px;
+}
+
+.empty_cell {
+	width: 0.8cm;
+	height: 0.8cm;
+	line-height:1.1em;
+	text-align:center;
+	border:0px solid #000000;
+	font-size: 16px;
+}

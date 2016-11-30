@@ -1,0 +1,804 @@
+<!-- NuclideSearch, A web application for finding nuclear data.
+Copyright (C) 2016  Jonas Nilsson
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
+
+{% extends "base.html" %}
+
+{% block title %}
+NuclideSearch: Advanced search
+{% endblock %}
+
+{% block style %}
+<link href="/static/css/adv_search_styling.css" rel="stylesheet">
+<link href="/static/css/generic_styling.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-3" id="leftCol">
+		<ul class="nav nav-stacked" data-spy="affix" id="sidebar">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Search criteria</h3>
+				</div>
+				<div class="panel-body">
+					<button id="hl_btn" onclick="toggle_criteria(this, 'hl');" type="button" class="btn btn-block">Half-life</button>
+					<button id="mass_btn" onclick="toggle_criteria(this, 'mass');" type="button" class="btn btn-block">Mass</button>
+					<button onclick="toggle_criteria(this, 'elem');" id="elem_btn" type="button" class="btn btn-block">Element</button>
+					<button id="rad_btn" onclick="add_rad(this);" type="button" class="btn btn-primary btn-block">Radiation</button>
+				</div>
+			</div>
+		</ul>
+	</div>
+	<div id="container_div" class="col-md-9">
+		<div class="center-cont page-header">
+			<h2>Advanced search</h2>
+		</div>
+		<div id='hl' class='panel panel-default'>
+			<div class='panel-heading'>
+				<h3 class='panel-title'>Half-life <span onclick="turn_off_criteria(this);" class='glyphicon glyphicon-remove close-button'></span></h3>
+			</div>
+			<div class='panel-body'>
+				<div class='row'>
+					<div class='col-sm-5'>
+						<div class='input-group'>
+							<input autocomplete="off" oninput="on_edit_high_low('hl_start', 'hl_stop', 'time');" name="hl_start" value="" id="hl_start" type='text' class='form-control'>
+							<div class='input-group-btn'>
+								<button id="hl_start_unit" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>Sec<span class='caret'></span></button>
+								<ul class='dropdown-menu'>
+									<li><a onclick="on_select(this, 's');on_edit_high_low('hl_start', 'hl_stop', 'time');">Sec</a></li>
+									<li><a onclick="on_select(this, 'm');on_edit_high_low('hl_start', 'hl_stop', 'time');" >Min</a></li>
+									<li><a onclick="on_select(this, 'h');on_edit_high_low('hl_start', 'hl_stop', 'time');">Hours</a></li>
+									<li><a onclick="on_select(this, 'd');on_edit_high_low('hl_start', 'hl_stop', 'time');">Days</a></li>
+									<li><a onclick="on_select(this, 'y');on_edit_high_low('hl_start', 'hl_stop', 'time');">Years</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class='col-sm-2 center-cont'>
+						<b>to</b>
+					</div>
+					<div class='col-sm-5'>
+						<div class='input-group'>
+							<input autocomplete="off" oninput="on_edit_high_low('hl_start', 'hl_stop', 'time');" value="" id="hl_stop" type='text' class='form-control'>
+							<div class='input-group-btn'>
+								<button id="hl_stop_unit" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>Sec<span class='caret'></span></button>
+								<ul class='dropdown-menu'>
+									<li><a onclick="on_select(this, 's');on_edit_high_low('hl_start', 'hl_stop', 'time');">Sec</a></li>
+									<li><a onclick="on_select(this, 'm');on_edit_high_low('hl_start', 'hl_stop', 'time');">Min</a></li>
+									<li><a onclick="on_select(this, 'h');on_edit_high_low('hl_start', 'hl_stop', 'time');">Hours</a></li>
+									<li><a onclick="on_select(this, 'd');on_edit_high_low('hl_start', 'hl_stop', 'time');">Days</a></li>
+									<li><a onclick="on_select(this, 'y');on_edit_high_low('hl_start', 'hl_stop', 'time');">Years</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id='mass' class='panel panel-default'>
+			<div class='panel-heading'>
+				<h3 class='panel-title'>Mass number <span onclick="turn_off_criteria(this);" class='glyphicon glyphicon-remove close-button'></span></h3>
+			</div>
+			<div class='panel-body'>
+				<div class='row'>
+					<div class='col-sm-5'>
+						<input autocomplete="off" oninput="on_edit_high_low('mass_low', 'mass_high', 'mass');" id="mass_low" type='text' class='form-control'>
+					</div>
+					<div class='col-sm-2 center-cont'>
+						<b>to</b>
+					</div>
+					<div class='col-sm-5'>
+						<input autocomplete="off" oninput="on_edit_high_low('mass_low', 'mass_high', 'mass');" id="mass_high" type='text' class='form-control'>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id='elem' class='panel panel-default'>
+			<div class='panel-heading'>
+				<h3 class='panel-title'>Element<span onclick="turn_off_criteria(this);" class='glyphicon glyphicon-remove close-button'></span></h3>
+			</div>
+			<div class='panel-body'>
+				<div class='row'>
+					<div class='col-sm-5'>
+						<div class="input-group">
+							<span class="input-group-addon">Symb.:</span>
+							<input autocomplete="off" oninput="on_edit_symb(this, 'strt_z', 'stop_symb', 'stop_z');" id="strt_symb" type="text" class="form-control">
+						</div>
+						</br>
+						<div class="input-group">
+							<span class="input-group-addon">Z:</span>
+							<input autocomplete="off" oninput="on_edit_z(this, 'strt_symb', 'stop_symb', 'stop_z');" id="strt_z" type="text" class="form-control">
+						</div>
+					</div>
+					<div class='col-sm-2 center-cont'>
+						<b>to</b>
+					</div>
+					<div class='col-sm-5'>
+						<div class="input-group">
+							<span class="input-group-addon">Symb.:</span>
+							<input autocomplete="off" oninput="on_edit_symb(this, 'stop_z', 'strt_symb', 'strt_z');" id="stop_symb" type="text" class="form-control">
+						</div>
+						</br>
+						<div class="input-group">
+							<span class="input-group-addon">Z:</span>
+							<input autocomplete="off" oninput="on_edit_z(this, 'stop_symb', 'strt_symb', 'strt_z');" id="stop_z" type="text" class="form-control">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id='rad_1' class='panel panel-default'>
+			<div class='panel-heading'>
+				<h3 class='panel-title'>Radiation 1<span onclick="turn_off_criteria(this, 'do');" class='glyphicon glyphicon-remove close-button'></span></h3>
+			</div>
+			<div class='panel-body'>
+				<div class='input-group'>
+					<div class='input-group-btn'>
+						<button id="rad_type_1" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>&#945;<span class='caret'></span></button>
+						<ul class='dropdown-menu'>
+							<li><a onclick="on_select(this, 'a');">&#945;</a></li>
+							<li><a onclick="on_select(this, 'b');">&#946;</a></li>
+							<li><a onclick="on_select(this, 'g');">&#947;</a></li>
+							<!-- <li><a onclick="on_select(this, 'x');">X-ray</a></li> -->
+						</ul>
+					</div>
+					<input autocomplete="off" oninput="on_edit_rad(this);" value="" id="rad_en_1" type='text' class='form-control'>
+					<span class="input-group-addon">&#177;</span>
+					<input autocomplete="off" oninput="on_edit_rad(this);" value="" id="rad_pm_1"  placeholder="10" type='text' class='form-control'>
+					<span class="input-group-addon">keV</span>
+				</div>
+				</br>
+				<div class='input-group'>
+					<span class="input-group-addon">Intensity</span>
+					<div class='input-group-btn'>
+						<button id="rad_int_dir_1" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'><<span class='caret'></span></button>
+						<ul class='dropdown-menu'>
+							<li><a onclick="on_select(this, 'lt');">&#8804;</a></li>
+							<li><a onclick="on_select(this, 'gt');">&#8805;</a></li>
+						</ul>
+					</div>
+					<input autocomplete="off" oninput="on_edit_rad(this);" value="" id="rad_int_1" type='text' class='form-control'>
+					<span class="input-group-addon">%</span>
+					<div class='input-group-btn'>
+						<button id="rad_int_type_1" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>Rel. intensity<span class='caret'></span></button>
+						<ul class='dropdown-menu'>
+							<li><a onclick="on_select(this, 'rel');">Rel. intensity</a></li>
+							<li><a onclick="on_select(this, 'abs');">Abs. intensity</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id='rad_2' class='panel panel-default'>
+			<div class='panel-heading'>
+				<h3 class='panel-title'>Radiation 2<span onclick="turn_off_criteria(this, 'do');" class='glyphicon glyphicon-remove close-button'></span></h3>
+			</div>
+			<div class='panel-body'>
+				<div class='input-group'>
+					<div class='input-group-btn'>
+						<button id="rad_type_2" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>&#945;<span class='caret'></span></button>
+						<ul class='dropdown-menu'>
+							<li><a onclick="on_select(this, 'a');">&#945;</a></li>
+							<li><a onclick="on_select(this, 'b');">&#946;</a></li>
+							<li><a onclick="on_select(this, 'g');">&#947;</a></li>
+							<!-- <li><a onclick="on_select(this, 'x');">X-ray</a></li> -->
+						</ul>
+					</div>
+					<input autocomplete="off" oninput="on_edit_rad(this);" value="" id="rad_en_2" type='text' class='form-control'>
+					<span class="input-group-addon">&#177;</span>
+					<input autocomplete="off" oninput="on_edit_rad(this);" value="" id="rad_pm_2"  placeholder="10" type='text' class='form-control'>
+					<span class="input-group-addon">keV</span>
+				</div>
+				</br>
+				<div class='input-group'>
+					<span class="input-group-addon">Intensity</span>
+					<div class='input-group-btn'>
+						<button id="rad_int_dir_2" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'><<span class='caret'></span></button>
+						<ul class='dropdown-menu'>
+							<li><a onclick="on_select(this, 'lt');">&#8804;</a></li>
+							<li><a onclick="on_select(this, 'gt');">&#8805;</a></li>
+						</ul>
+					</div>
+					<input autocomplete="off" oninput="on_edit_rad(this);" value="" id="rad_int_2" type='text' class='form-control'>
+					<span class="input-group-addon">%</span>
+					<div class='input-group-btn'>
+						<button id="rad_int_type_2" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>Rel. intensity<span class='caret'></span></button>
+						<ul class='dropdown-menu'>
+							<li><a onclick="on_select(this, 'rel');">Rel. intensity</a></li>
+							<li><a onclick="on_select(this, 'abs');">Abs. intensity</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id='rad_3' class='panel panel-default'>
+			<div class='panel-heading'>
+				<h3 class='panel-title'>Radiation 3<span onclick="turn_off_criteria(this, 'do');" class='glyphicon glyphicon-remove close-button'></span></h3>
+			</div>
+			<div class='panel-body'>
+				<div class='input-group'>
+					<div class='input-group-btn'>
+						<button id="rad_type_3" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>&#945;<span class='caret'></span></button>
+						<ul class='dropdown-menu'>
+							<li><a onclick="on_select(this, 'a');">&#945;</a></li>
+							<li><a onclick="on_select(this, 'b');">&#946;</a></li>
+							<li><a onclick="on_select(this, 'g');">&#947;</a></li>
+							<!-- <li><a onclick="on_select(this, 'x');">X-ray</a></li> -->
+						</ul>
+					</div>
+					<input autocomplete="off" oninput="on_edit_rad(this);" value="" id="rad_en_3" type='text' class='form-control'>
+					<span class="input-group-addon">&#177;</span>
+					<input autocomplete="off" oninput="on_edit_rad(this);" value="" placeholder="10" id="rad_pm_3" type='text' class='form-control'>
+					<span class="input-group-addon">keV</span>
+				</div>
+				</br>
+				<div class='input-group'>
+					<span class="input-group-addon">Intensity</span>
+					<div class='input-group-btn'>
+						<button id="rad_int_dir_3" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'><<span class='caret'></span></button>
+						<ul class='dropdown-menu'>
+							<li><a onclick="on_select(this, 'lt');">&#8804;</a></li>
+							<li><a onclick="on_select(this, 'gt');">&#8805;</a></li>
+						</ul>
+					</div>
+					<input autocomplete="off" oninput="on_edit_rad(this);" value="" id="rad_int_3" type='text' class='form-control'>
+					<span class="input-group-addon">%</span>
+					<div class='input-group-btn'>
+						<button id="rad_int_type_3" type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>Rel. intensity<span class='caret'></span></button>
+						<ul class='dropdown-menu'>
+							<li><a onclick="on_select(this, 'rel');">Rel. intensity</a></li>
+							<li><a onclick="on_select(this, 'abs');">Abs. intensity</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<button id="search_btn" onclick="search();" type="button" class="close-button btn btn-primary btn-lg">Search</button> 
+	</div>
+</div>
+{% endblock %}
+
+{% block end_script %}
+<script>
+
+function turn_off_criteria(caller, rad) {
+	var elem = caller.parentNode.parentNode.parentNode;
+	var btn_name = "#" + elem.id + "_btn";
+	elem.style.display = 'none';
+	$(btn_name).addClass("btn-primary");
+	localStorage.setItem("adv_" + elem.id, false);
+	if (rad != "none") {
+		$('#rad_btn').addClass("btn-primary");
+	}
+	can_search();
+}
+
+function toggle_criteria(caller, criteria) {
+	var elem = $('#' + criteria);
+	if (elem.css('display') == "none") {
+		elem.css('display', '');
+		$(caller).removeClass("btn-primary");
+		localStorage.setItem("adv_" + criteria, true);
+	} else {
+		elem.css('display', 'none');
+		$(caller).addClass("btn-primary");
+		localStorage.setItem("adv_" + criteria, false);
+	}
+	can_search();
+}
+
+function add_rad(caller) {
+	var rad1 = document.getElementById("rad_1");
+	var rad2 = document.getElementById("rad_2");
+	var rad3 = document.getElementById("rad_3");
+	if (rad1.style.display == 'none') {
+		rad1.style.display = '';
+		localStorage.setItem("adv_rad_1", true);
+	} else if (rad2.style.display == 'none') {
+		rad2.style.display = '';
+		localStorage.setItem("adv_rad_2", true);
+	} else if (rad3.style.display == 'none') {
+		rad3.style.display = '';
+		localStorage.setItem("adv_rad_3", true);
+	}
+	if (rad3.style.display == '' && rad2.style.display == '' && rad1.style.display == '') {
+		$(caller).removeClass("btn-primary");
+	}
+	can_search();
+}
+
+function on_edit_rad(caller) {
+	var num_re = /^(\d*\.\d+|\d+\.*\d*)$/;
+	$(caller).removeClass("btn-danger");
+	if (!caller.value.match(num_re) && caller.value.length > 0) {
+		$(caller).addClass("btn-danger");
+	}
+	localStorage.setItem("adv_" + caller.id, caller.value);
+	can_search();
+}
+
+function set_up_search() {
+	for (var key in localStorage) {
+		if (key.substring(0,4) == "adv_") {
+			var elem = document.getElementById(key.substring(4,key.length));
+			if (elem.tagName.toLowerCase() == "INPUT".toLowerCase()) {
+				elem.value = localStorage.getItem(key);
+			} else if (elem.tagName.toLowerCase() == "BUTTON".toLowerCase()) {
+				elem.innerHTML = decode_label(localStorage.getItem(key));
+			} else if (elem.tagName.toLowerCase() == "div".toLowerCase()) {
+				if (localStorage.getItem(key) == "false") {
+					elem.style.display = "none";
+					var btn_elem = document.getElementById(elem.id + "_btn");
+					$(btn_elem).addClass("btn-primary");
+				}
+			}
+		}
+	}
+}
+
+function decode_label(input) {
+	var ret_str = input;
+	if (ret_str == "s") {
+		ret_str = "Sec";
+	} else if (ret_str == "m") {
+		ret_str = "Min";
+	} else if (ret_str == "h") {
+		ret_str = "Hours";
+	} else if (ret_str == "d") {
+		ret_str = "Days";
+	} else if (ret_str == "y") {
+		ret_str = "Years";
+	} else if (ret_str == "a") {
+		ret_str = "&#945;";
+	} else if (ret_str == "b") {
+		ret_str = "&#946;";
+	} else if (ret_str == "g") {
+		ret_str = "&#947;";
+	} else if (ret_str == "x") {
+		ret_str = "X-ray";
+	} else if (ret_str == "lt") {
+		ret_str = "&#8804;";
+	} else if (ret_str == "gt") {
+		ret_str = "&#8805;";
+	} else if (ret_str == "abs") {
+		ret_str = "Abs. intensity";
+	} else if (ret_str == "rel") {
+		ret_str = "Rel. intensity";
+	}
+	return ret_str + "<span class='caret'></span>";
+}
+
+function time_multiplier(unit) {
+	if (unit == "s") {
+		return 1.0;
+	}
+	if (unit == "m") {
+		return 60.0;
+	}
+	if (unit == "h") {
+		return 3600.0;
+	}
+	if (unit == "d") {
+		return 24 * 3600.0;
+	}
+	if (unit == "y") {
+		return 365.25 * 24 * 3600.0;
+	}
+	return null;
+}
+
+function on_edit_high_low(low_id, high_id, num) {
+	var num_re = /^\d*$/;
+	if (num == "time") {
+		num_re = /^(\d*\.\d+|\d+\.*\d*)$/;
+	}
+	var low = document.getElementById(low_id);
+	var high = document.getElementById(high_id);
+	localStorage.setItem("adv_" + low_id, low.value);
+	localStorage.setItem("adv_" + high_id, high.value);
+	$(low).removeClass("btn-danger");
+	$(high).removeClass("btn-danger");
+	if (low.value.length > 0 && !low.value.match(num_re)) {
+		$(low).addClass("btn-danger");
+	}
+	if (high.value.length > 0 && !high.value.match(num_re)) {
+		$(high).addClass("btn-danger");
+	}
+	if (high.value.length > 0 && low.value.length > 0 && high.value.match(num_re) && low.value.match(num_re)) {
+		var strt = parseFloat(low.value);
+		var stop = parseFloat(high.value);
+		if (num == "time") {
+			strt = parseFloat(low.value) * parseFloat(time_multiplier(localStorage.getItem("adv_" + low.id + "_unit")));
+			stop = parseFloat(high.value) * parseFloat(time_multiplier(localStorage.getItem("adv_" + high.id + "_unit")));
+		}
+		if (stop < strt) {
+			$(low).addClass("btn-danger");
+			$(high).addClass("btn-danger");
+		}
+	}
+	can_search();
+}
+
+function on_edit_symb(caller, z, other_symb, other_z) {
+	var symb = caller;
+	symb.placeholder = "";
+	var z = document.getElementById(z);
+	z.value = "";
+	localStorage.setItem("adv_" + z.id, "");
+	localStorage.setItem("adv_" + symb.id, symb.value);
+	
+	var other_z = document.getElementById(other_z);
+	var other_symb = document.getElementById(other_symb);
+	$(z).removeClass("btn-danger");
+	$(symb).removeClass("btn-danger");
+	if (symb.value.length == 0) {
+		z.placeholder = "";
+		if (other_symb.value.length == 0 && other_z.value.length == 0) {
+			other_z.placeholder = "";
+			other_symb.placeholder = "";
+		}
+		can_search();
+		return;
+	}
+	for (var i = 0; i < all_symbols.length; i++) {
+		if (all_symbols[i].toLowerCase() == symb.value.toLowerCase()) {
+			z.placeholder = i;
+			if (other_symb.value.length == 0 && other_z.value.length == 0) {
+				other_z.placeholder = i;
+				other_symb.placeholder = all_symbols[i];
+			}
+			can_search();
+			return;
+		}
+	}
+	$(symb).addClass("btn-danger");
+	can_search();
+}
+
+function on_edit_z(caller, symb, other_symb, other_z) {
+	var symb = document.getElementById(symb);
+	var z = caller;
+	localStorage.setItem("adv_" + z.id, z.value);
+	localStorage.setItem("adv_" + symb.id, "");
+	z.placeholder = "";
+	symb.value = "";
+	
+	var other_z = document.getElementById(other_z);
+	var other_symb = document.getElementById(other_symb);
+	$(z).removeClass("btn-danger");
+	$(symb).removeClass("btn-danger");
+	if (z.value.length == 0) {
+		symb.placeholder = "";
+		if (other_symb.value.length == 0 && other_z.value.length == 0) {
+			other_z.placeholder = "";
+			other_symb.placeholder = "";
+		}
+		can_search();
+		return;
+	}
+	var num_re = /^\d{1,3}$/;
+	if (z.value.match(num_re)) {
+		var int_val = parseInt(z.value, 10);
+		var extr_symb = all_symbols[int_val];
+		if (extr_symb != "null") {
+			symb.placeholder = extr_symb;
+			if (other_symb.value.length == 0 && other_symb.value.length == 0) {
+				other_z.placeholder = int_val;
+				other_symb.placeholder = extr_symb;
+			}
+			can_search();
+			return;
+		}
+	}
+	$(z).addClass("btn-danger");
+	can_search();
+}
+
+function can_search() {
+	var button = document.getElementById("search_btn");
+	var res = $('.btn-danger');
+	var disable = false;
+	res.each(function(index, elem) {
+		if ($(elem).closest("div.panel-default").css("display") != "none") {
+			disable = true;
+		}
+	});
+	button.disabled = disable; 
+}
+
+function EncodeQueryData(data) {
+   var ret = [];
+   for (var d in data)
+      ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+   return ret.join("&");
+}
+
+function add_if_exists(dict, id) {
+	if (localStorage.getItem(id) != null) {
+		if (localStorage.getItem(id).length != 0) {
+			dict[id.substring(4,id.length)] = localStorage.getItem(id);
+		}
+	}
+	return dict
+}
+
+function search() {
+	var ret = {};
+	if (localStorage.getItem("adv_hl") == "true") {
+		add_if_exists(ret, "adv_hl_start");
+		add_if_exists(ret, "adv_hl_start_unit");
+		add_if_exists(ret, "adv_hl_stop");
+		add_if_exists(ret, "adv_hl_stop_unit");
+	}
+	if (localStorage.getItem("adv_mass") == "true") {
+		add_if_exists(ret, "adv_mass_low");
+		add_if_exists(ret, "adv_mass_high");
+	}
+	if (localStorage.getItem("adv_elem") == "true") {
+		add_if_exists(ret, "adv_stop_symb");
+		add_if_exists(ret, "adv_stop_z");
+		add_if_exists(ret, "adv_strt_symb");
+		add_if_exists(ret, "adv_strt_z");
+	}
+	if (localStorage.getItem("adv_rad_1") == "true") {
+		add_if_exists(ret, "adv_rad_en_1");
+		add_if_exists(ret, "adv_rad_pm_1");
+		add_if_exists(ret, "adv_rad_type_1");
+		add_if_exists(ret, "adv_rad_int_dir_1");
+		add_if_exists(ret, "adv_rad_int_1");
+		add_if_exists(ret, "adv_rad_int_type_1");
+	}
+	if (localStorage.getItem("adv_rad_2") == "true") {
+		add_if_exists(ret, "adv_rad_en_2");
+		add_if_exists(ret, "adv_rad_pm_2");
+		add_if_exists(ret, "adv_rad_type_2");
+		add_if_exists(ret, "adv_rad_int_dir_2");
+		add_if_exists(ret, "adv_rad_int_2");
+		add_if_exists(ret, "adv_rad_int_type_2");
+	}
+	if (localStorage.getItem("adv_rad_3") == "true") {
+		add_if_exists(ret, "adv_rad_en_3");
+		add_if_exists(ret, "adv_rad_pm_3");
+		add_if_exists(ret, "adv_rad_type_3");
+		add_if_exists(ret, "adv_rad_int_dir_3");
+		add_if_exists(ret, "adv_rad_int_3");
+		add_if_exists(ret, "adv_rad_int_type_3");
+	}
+	var query = EncodeQueryData(ret);
+	var adv_res_url = "/adv_search_res/?";
+	window.location.href = adv_res_url + query;
+}
+
+function on_select(caller, save_sel) {
+	var trgt = caller.parentNode.parentNode.parentNode.firstChild.nextSibling;
+	trgt.innerHTML = caller.innerHTML + "<span class='caret'></span>";
+	localStorage.setItem("adv_" + trgt.id, save_sel);
+}
+
+function createArray() {
+      this.length = 200
+      this[0] = "n";
+      this[1] = "H";
+      this[2] = "He";
+      this[3] = "Li";
+      this[4] = "Be";
+      this[5] = "B";
+      this[6] = "C";
+      this[7] = "N";
+      this[8] = "O";
+      this[9] = "F";
+      this[10] = "Ne";
+      this[11] = "Na";
+      this[12] = "Mg";
+      this[13] = "Al";
+      this[14] = "Si";
+      this[15] = "P";
+      this[16] = "S";
+      this[17] = "Cl";
+      this[18] = "Ar";
+      this[19] = "K";
+      this[20] = "Ca";
+      this[21] = "Sc";
+      this[22] = "Ti";
+      this[23] = "V";
+      this[24] = "Cr";
+      this[25] = "Mn";
+      this[26] = "Fe";
+      this[27] = "Co";
+      this[28] = "Ni";
+      this[29] = "Cu";
+      this[30] = "Zn";
+      this[31] = "Ga";
+      this[32] = "Ge";
+      this[33] = "As";
+      this[34] = "Se";
+      this[35] = "Br";
+      this[36] = "Kr";
+      this[37] = "Rb";
+      this[38] = "Sr";
+      this[39] = "Y";
+      this[40] = "Zr";
+      this[41] = "Nb";
+      this[42] = "Mo";
+      this[43] = "Tc";
+      this[44] = "Ru";
+      this[45] = "Rh";
+      this[46] = "Pd";
+      this[47] = "Ag";
+      this[48] = "Cd";
+      this[49] = "In";
+      this[50] = "Sn";
+      this[51] = "Sb";
+      this[52] = "Te";
+      this[53] = "I";
+      this[54] = "Xe";
+      this[55] = "Cs";
+      this[56] = "Ba";
+      this[57] = "La";
+      this[58] = "Ce";
+      this[59] = "Pr";
+      this[60] = "Nd";
+      this[61] = "Pm";
+      this[62] = "Sm";
+      this[63] = "Eu";
+      this[64] = "Gd";
+      this[65] = "Tb";
+      this[66] = "Dy";
+      this[67] = "Ho";
+      this[68] = "Er";
+      this[69] = "Tm";
+      this[70] = "Yb";
+      this[71] = "Lu";
+      this[72] = "Hf";
+      this[73] = "Ta";
+      this[74] = "W";
+      this[75] = "Re";
+      this[76] = "Os";
+      this[77] = "Ir";
+      this[78] = "Pt";
+      this[79] = "Au";
+      this[80] = "Hg";
+      this[81] = "Tl";
+      this[82] = "Pb";
+      this[83] = "Bi";
+      this[84] = "Po";
+      this[85] = "At";
+      this[86] = "Rn";
+      this[87] = "Fr";
+      this[88] = "Ra";
+      this[89] = "Ac";
+      this[90] = "Th";
+      this[91] = "Pa";
+      this[92] = "U";
+      this[93] = "Np";
+      this[94] = "Pu";
+      this[95] = "Am";
+      this[96] = "Cm";
+      this[97] = "Bk";
+      this[98] = "Cf";
+      this[99] = "Es";
+      this[100] = "Fm";
+      this[101] = "Md";
+      this[102] = "No";
+      this[103] = "Lr";
+      this[104] = "Rf";
+      this[105] = "Ha";
+      this[106] = "Sg";
+      this[107] = "Ns";
+      this[108] = "Hs";
+      this[109] = "Mt";
+      this[110] = "Ds";
+      this[111] = "Rg";
+      this[112] = "Cn";
+      this[113] = "Uut";
+      this[114] = "Fl";
+      this[115] = "Uup";
+      this[116] = "Lv";
+      this[117] = "Uus";
+      this[118] = "Uuo";
+      this[119] = "19";
+      this[120] = "20";
+      this[121] = "21";
+      this[122] = "22";
+      this[123] = "23";
+      this[124] = "24";
+      this[125] = "25";
+      this[126] = "26";
+      this[127] = "27";
+      this[128] = "28";
+      this[129] = "29";
+      this[130] = "30";
+      this[131] = "31";
+      this[132] = "32";
+      this[133] = "33";
+      this[134] = "34";
+      this[135] = "35";
+      this[136] = "36";
+      this[137] = "37";
+      this[138] = "38";
+      this[139] = "39";
+      this[140] = "40";
+      this[141] = "41";
+      this[142] = "42";
+      this[143] = "43";
+      this[144] = "44";
+      this[145] = "45";
+      this[146] = "46";
+      this[147] = "47";
+      this[148] = "48";
+      this[149] = "49";
+      this[150] = "50";
+      this[151] = "51";
+      this[152] = "52";
+      this[153] = "53";
+      this[154] = "54";
+      this[155] = "55";
+      this[156] = "56";
+      this[157] = "57";
+      this[158] = "58";
+      this[159] = "59";
+      this[160] = "60";
+      this[161] = "61";
+      this[162] = "62";
+      this[163] = "63";
+      this[164] = "64";
+      this[165] = "65";
+      this[166] = "66";
+      this[167] = "67";
+      this[168] = "68";
+      this[169] = "69";
+      this[170] = "70";
+      this[171] = "71";
+      this[172] = "72";
+      this[173] = "73";
+      this[174] = "74";
+      this[175] = "75";
+      this[176] = "76";
+      this[177] = "77";
+      this[178] = "78";
+      this[179] = "79";
+      this[180] = "80";
+      this[181] = "81";
+      this[182] = "82";
+      this[183] = "83";
+      this[184] = "84";
+      this[185] = "85";
+      this[186] = "86";
+      this[187] = "87";
+      this[188] = "88";
+      this[189] = "89";
+      this[190] = "90";
+      this[191] = "91";
+      this[192] = "92";
+      this[193] = "93";
+      this[194] = "94";
+      this[195] = "95";
+      this[196] = "96";
+      this[197] = "97";
+      this[198] = "98";
+      this[199] = "99";
+}
+
+
+all_symbols = new createArray()
+
+set_up_search();
+window.onunload = function(){};
+</script>
+{% endblock%}

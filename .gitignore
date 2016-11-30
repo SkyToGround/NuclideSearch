@@ -1,0 +1,5 @@
+.DS_Store
+*.pyc
+*.sql3
+*.mdb
+collected_static/*

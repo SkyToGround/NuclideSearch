@@ -1,0 +1,225 @@
+<!-- NuclideSearch, A web application for finding nuclear data.
+Copyright (C) 2016  Jonas Nilsson
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
+
+{% extends "base.html" %}
+
+{% block title %}
+NuclideSearch: Home
+{% endblock %}
+
+{% block style %}
+<link href="/static/css/search_styling.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<div class="center-cont">
+	<div class="page-header">
+		<h2>Search for nuclear data</h2>
+	</div>
+	<div class="input-search">
+		<p>Examples: <a href="search/?query=Eu">Eu</a>, <a href="search/?query=K-40">K-40</a>, <a href="search/?query=662 kev">662 keV</a>, <a href="search/?query=110 min">110 min</a>, <a href="search/?query=60">60</a></p>
+		<div>
+			<form action="/search" formmethod="get">
+				<input name="query" action="/search/" formmethod="get" class="typeahead" type="text" placeholder="Search term">
+				<input class="btn btn-primary search-btn-pos" type="submit" value="Search">
+			</form>
+		</div>
+	</div>
+	
+	<h2>Periodic table</h2>
+	<table>
+		<tbody>
+			<tr>
+				<td class="nonmetal elem_cell"><a href="/search/?query=H">H</a></td>
+				<td colspan="16" class="empty_cell"></td>
+				<td class="noblegas elem_cell"><a href="/search/?query=He">He</a></td>
+			</tr>
+			<tr>
+				<td class="alkali elem_cell"><a href="/search/?query=Li">Li</a></td>
+				<td class="alkaline elem_cell"><a href="/search/?query=Be">Be</a></td>
+				<td colspan="10" class="empty_cell"></td>
+				<td class="metoid elem_cell"><a href="/search/?query=B">B</a></td>
+				<td class="poly elem_cell"><a href="/search/?query=C">C</a></td>
+				<td class="nonmetal elem_cell"><a href="/search/?query=N">N</a></td>
+				<td class="nonmetal elem_cell"><a href="/search/?query=O">O</a></td>
+				<td class="nonmetal elem_cell"><a href="/search/?query=F">F</a></td>
+				<td class="noblegas elem_cell"><a href="/search/?query=Ne">Ne</a></td>
+			</tr>
+			<tr>
+				<td class="alkali elem_cell"><a href="/search/?query=Na">Na</a></td>
+				<td class="alkaline elem_cell"><a href="/search/?query=Mg">Mg</a></td>
+				<td colspan="10" class="empty_cell"></td>
+				<td class="poor elem_cell"><a href="/search/?query=Al">Al</a></td>
+				<td class="metoid elem_cell"><a href="/search/?query=Si">Si</a></td>
+				<td class="poly elem_cell"><a href="/search/?query=P">P</a></td>
+				<td class="poly elem_cell"><a href="/search/?query=S">S</a></td>
+				<td class="nonmetal elem_cell"><a href="/search/?query=Cl">Cl</a></td>
+				<td class="noblegas elem_cell"><a href="/search/?query=Ar">Ar</a></td>
+			</tr>
+			<tr>
+				<td class="alkali elem_cell"><a href="/search/?query=K">K</a></td>
+				<td class="alkaline elem_cell"><a href="/search/?query=Ca">Ca</a></td>
+				
+				<td class="trans elem_cell"><a href="/search/?query=Sc">Sc</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Ti">Ti</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=V">V</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Cr">Cr</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Mn">Mn</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Fe">Fe</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Co">Co</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Ni">Ni</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Cu">Cu</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Zn">Zn</a></td>
+				
+				<td class="poor elem_cell"><a href="/search/?query=Ga">Ga</a></td>
+				<td class="metoid elem_cell"><a href="/search/?query=Ge">Ge</a></td>
+				<td class="metoid elem_cell"><a href="/search/?query=As">As</a></td>
+				<td class="poly elem_cell"><a href="/search/?query=Se">Se</a></td>
+				<td class="nonmetal elem_cell"><a href="/search/?query=Br">Br</a></td>
+				<td class="noblegas elem_cell"><a href="/search/?query=Kr">Kr</a></td>
+			</tr>
+			<tr>
+				<td class="alkali elem_cell"><a href="/search/?query=Rb">Rb</a></td>
+				<td class="alkaline elem_cell"><a href="/search/?query=Sr">Sr</a></td>
+				
+				<td class="trans elem_cell"><a href="/search/?query=Y">Y</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Zr">Zr</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Nb">Nb</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Mo">Mo</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Tc">Tc</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Ru">Ru</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Rh">Rh</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Pd">Pd</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Ag">Ag</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Cd">Cd</a></td>
+				
+				<td class="poor elem_cell"><a href="/search/?query=In">In</a></td>
+				<td class="poor elem_cell"><a href="/search/?query=Sn">Sn</a></td>
+				<td class="metoid elem_cell"><a href="/search/?query=Sb">Sb</a></td>
+				<td class="metoid elem_cell"><a href="/search/?query=Te">Te</a></td>
+				<td class="nonmetal elem_cell"><a href="/search/?query=I">I</a></td>
+				<td class="noblegas elem_cell"><a href="/search/?query=Xe">Xe</a></td>
+			</tr>
+			<tr>
+				<td class="alkali elem_cell"><a href="/search/?query=Cs">Cs</a></td>
+				<td class="alkaline elem_cell"><a href="/search/?query=Ba">Ba</a></td>
+				
+				<td class="empty_cell">*</td>
+				<td class="trans elem_cell"><a href="/search/?query=Hf">Hf</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Ta">Ta</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=W">W</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Re">Re</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Os">Os</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Ir">Ir</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Pt">Pt</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Au">Au</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Hg">Hg</a></td>
+				
+				<td class="poor elem_cell"><a href="/search/?query=Tl">Tl</a></td>
+				<td class="poor elem_cell"><a href="/search/?query=Pb">Pb</a></td>
+				<td class="poor elem_cell"><a href="/search/?query=Bi">Bi</a></td>
+				<td class="poor elem_cell"><a href="/search/?query=Po">Po</a></td>
+				<td class="metoid elem_cell"><a href="/search/?query=At">At</a></td>
+				<td class="noblegas elem_cell"><a href="/search/?query=Rn">Rn</a></td>
+			</tr>
+			<tr>
+				<td class="alkali elem_cell"><a href="/search/?query=Fr">Fr</a></td>
+				<td class="alkaline elem_cell"><a href="/search/?query=Ra">Ra</a></td>
+				
+				<td class="empty_cell">**</td>
+				<td class="trans elem_cell"><a href="/search/?query=Rf">Rf</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Db">Db</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Sg">Sg</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Bh">Bh</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Hs">Hs</a></td>
+				<td class="unkn elem_cell"><a href="/search/?query=Mt">Mt</a></td>
+				<td class="unkn elem_cell"><a href="/search/?query=Ds">Ds</a></td>
+				<td class="unkn elem_cell"><a href="/search/?query=Rg">Rg</a></td>
+				<td class="trans elem_cell"><a href="/search/?query=Cn">Cn</a></td>
+				
+				<td class="unkn elem_cell"><a href="/search/?query=Uut">Uut</a></td>
+				<td class="unkn elem_cell"><a href="/search/?query=Fl">Fl</a></td>
+				<td class="unkn elem_cell"><a href="/search/?query=Uup">Uup</a></td>
+				<td class="unkn elem_cell"><a href="/search/?query=Lv">Lv</a></td>
+				<td class="unkn elem_cell"><a href="/search/?query=Uus">Uus</a></td>
+				<td class="unkn elem_cell"><a href="/search/?query=Uuo">Uuo</a></td>
+			</tr>
+			<tr>
+			</tr>
+			<tr>
+			</tr>
+			<tr>
+			</tr>
+			<tr>
+				<td class="empty_cell"></td>
+				<td class="empty_cell">*</td>
+				<td class="lanth elem_cell"><a href="/search/?query=La">La</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Ce">Ce</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Pr">Pr</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Nd">Nd</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Pm">Pm</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Sm">Sm</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Eu">Eu</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Gd">Gd</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Tb">Tb</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Dy">Dy</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Ho">Ho</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Er">Er</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Tm">Tm</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Yb">Yb</a></td>
+				<td class="lanth elem_cell"><a href="/search/?query=Lu">Lu</a></td>
+				<td class="empty_cell"></td>
+			</tr>
+			<tr>
+				<td class="empty_cell"></td>
+				<td class="empty_cell">**</td>
+				<td class="acti elem_cell"><a href="/search/?query=Ac">Ac</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Th">Th</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Pa">Pa</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=U">U</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Np">Np</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Pu">Pu</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Am">Am</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Cm">Cm</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Bk">Bk</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Cf">Cf</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Es">Es</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Fm">Fm</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Md">Md</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=No">No</a></td>
+				<td class="acti elem_cell"><a href="/search/?query=Lr">Lr</a></td>
+				<td class="empty_cell"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+
+{% endblock %}
+
+{% block end_script %}
+<script src="/static/js/Hogan.js"></script>
+<script>
+$('.container .typeahead').typeahead({
+	name: 'auto_complete',
+	remote: '/auto_complete/input=%QUERY',
+	template: '{{template|safe}}',
+	limit: 10,
+	engine: Hogan,
+});
+</script>
+{% endblock %}

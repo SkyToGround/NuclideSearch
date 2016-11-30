@@ -1,0 +1,75 @@
+<!-- NuclideSearch, A web application for finding nuclear data.
+Copyright (C) 2016  Jonas Nilsson
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
+
+{% extends "base.html" %}
+
+{% block title %}
+NuclideSearch: Adv. search result
+{% endblock %}
+
+
+{% block content %}
+<div class="center-cont">
+	<h2>{{matches_string}}</h2>
+</div>
+
+{% if found_matches %}
+</br>
+</br>
+<div class="well">
+<h2>Results</h2>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th data-defaultsort="desc">Name</th>
+				<th>Half-life</th>
+				<th class="hidden-phone">Decay mode</th>
+				{% for col in extra_columns %}
+				<th>{{col|safe}}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for nuc in result_list %}
+			<tr>
+				<td data-value="{{nuc.name_order}}">
+					<a href="/show_nuclide/{{nuc.iZA}}">{{nuc.name}}</a>
+				</td>
+				<td data-value="{{nuc.halflife_order}}">
+					{{nuc.halflife|safe}}
+				</td>
+				<td class="hidden-phone">
+					{{nuc.mode|safe}}
+				</td>
+			{% for cell in nuc.extra_values %}
+				{%if cell.order %}
+				<td data-value="{{cell.order}}">
+					{{cell.value_str|safe}}
+				</td>
+				{% else %}
+				<td>
+					{{cell.value_str|safe}}
+				</td>
+				{% endif %}
+			{% endfor %}
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+
+{% endblock %}

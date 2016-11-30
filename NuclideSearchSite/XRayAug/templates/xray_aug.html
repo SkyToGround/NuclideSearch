@@ -1,0 +1,119 @@
+<!-- NuclideSearch, A web application for finding nuclear data.
+Copyright (C) 2016  Jonas Nilsson
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
+
+{% extends "base.html" %}
+
+{% block title %}
+X-ray and Auger electron data from {{name}}
+{% endblock %}
+
+{% block content %}
+<div class="center-cont">
+	<h2>X-rays and Auger electrons from {{element}}</h2>
+</div>
+
+{% if nothing_found %}
+<div class="center-cont">
+	<h5>No X-rays or Auger electrons found.</h5>
+</div>
+{% endif %}
+{% if xrays|length > 0 %}
+<div class="well">
+<h3>{{xrays|length}} X-rays found</h3>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th>Assignment</th>
+				<th data-defaultsort="asc">Energy (keV)</th>
+				<th>K-shell</th>
+				<th>L<sub>1</sub>-shell</th>
+				<th>L<sub>2</sub>-shell</th>
+				<th>L<sub>3</sub>-shell</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for xray in xrays %}
+			<tr>
+				<td data-value="{{xray.assignment_order}}">
+					{{xray.assignment|safe}}
+				</td>
+				<td>
+					{{xray.energy|safe}}
+				</td>
+				<td data-value="{{xray.k_order}}">
+					{{xray.k|safe}}
+				</td>
+				<td data-value="{{xray.l1_order}}">
+					{{xray.l1|safe}}
+				</td>
+				<td data-value="{{xray.l2_order}}">
+					{{xray.l2|safe}}
+				</td>
+				<td data-value="{{xray.l3_order}}">
+					{{xray.l3|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+
+{% if augers|length > 0 %}
+<div class="well">
+<h3>{{augers|length}} Auger electrons found</h3>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th>Assignment</th>
+				<th data-defaultsort="asc">Energy (keV)</th>
+				<th>K-shell</th>
+				<th>L<sub>1</sub>-shell</th>
+				<th>L<sub>2</sub>-shell</th>
+				<th>L<sub>3</sub>-shell</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for auger in augers %}
+			<tr>
+				<td data-value="{{auger.assignment_order}}">
+					{{auger.assignment|safe}}
+				</td>
+				<td>
+					{{auger.energy|safe}}
+				</td>
+				<td data-value="{{auger.k_order}}">
+					{{auger.k|safe}}
+				</td>
+				<td data-value="{{auger.l1_order}}">
+					{{auger.l1|safe}}
+				</td>
+				<td data-value="{{auger.l2_order}}">
+					{{auger.l2|safe}}
+				</td>
+				<td data-value="{{auger.l3_order}}">
+					{{auger.l3|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+
+
+
+{% endblock %}

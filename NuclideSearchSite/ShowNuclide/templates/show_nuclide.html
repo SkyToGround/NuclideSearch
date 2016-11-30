@@ -1,0 +1,294 @@
+<!-- NuclideSearch, A web application for finding nuclear data.
+Copyright (C) 2016  Jonas Nilsson
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
+
+{% extends "base.html" %}
+
+{% block title %}
+NuclideSearch: {{nuclide}}
+{% endblock %}
+
+{% block style %}
+<!-- <link href="/static/css/search_styling.css" rel="stylesheet"> -->
+{% endblock %}
+
+{% block content %}
+<div class="center-cont">
+	<div class="page-header">
+		<table align="center" border=0 cellpadding=1 cellspacing=0>
+		<tr><th class="nuc-sm-nr_1"><a href="/search/?query=A={{A}}">{{A}}</a>{{meta}}</th><th class="nuc-symb" rowspan=2><a href="/search/?query={{symb}}">{{symb}}</a></th></tr>
+		<tr><th class="nuc-sm-nr_1">{{Z}}</th><th class="nuc-sm-nr_2">{{N}}</th></tr>
+		</table>
+	</div>
+</div>
+<table class="table">
+	<tbody>
+		{% for info in general_info %}
+		<tr>
+			<td class="general-key">
+				{{info.key|safe}}
+			</td>
+			<td>
+				{{info.value|safe}}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% if citation_info|length > 0 %}
+<table class="table">
+	<tbody>
+		{% for info in citation_info %}
+		<tr>
+			<td class="general-key">
+				{{info.key|safe}}
+			</td>
+			<td>
+				{{info.value|safe}}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+{% if decay_properties|length > 0 %}
+<h3>Decay properties</h3>
+<table class="table">
+	<thead>
+		<tr>
+			<th>Mode</th>
+			<th>Branching (%)</th>
+			<th>Q-value (keV)</th>
+			<th>{% if has_dec_ref %} References {% endif %}</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for dec in decay_properties %}
+		<tr>
+			<td>
+				{{dec.mode|safe}}
+			</td>
+			<td>
+				{{dec.branch|safe}}
+			</td>
+			<td>
+				{{dec.q|safe}}
+			</td>
+			<td>
+				{{dec.ref|safe}}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+{% if related_nuclides|length > 0 %}
+<h3>Related nuclides</h3>
+<p class="text-danger">Warning, this table contains incorrect data in some cases. Always double check that the relation is possible.</p>
+<table class="table">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Relation</th>
+			<th>Half-life</th>
+			<th>Decay mode</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for rel in related_nuclides %}
+		<tr>
+			<td>
+				<a href="/show_nuclide/{{rel.iZA}}/">{{rel.name|safe}}
+			</td>
+			<td>
+				{{rel.relation}}
+			</td>
+			<td>
+				{{rel.halflife|safe}}
+			</td>
+			<td>
+				{{rel.mode|safe}}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+{% if extra_information|length > 0 %}
+<h3>Links to additional data</h3>
+<table class="table">
+	<tbody>
+		{% for ex in extra_information %}
+		<tr>
+			<td>
+				<a href="{{ex.url}}">{{ex.desc|safe}}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+{% if gamma_data|length > 0 %}
+<div class="well">
+<h3>&#947; from {{nuclide_pretty|safe}} ({{halflife|safe}})</h3>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th data-defaultsort="desc">Energy (keV)</th>
+				<th>Intensity (%)</th>
+				<th class="hidden-phone">Decay mode</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for gamma in gamma_data %}
+			<tr>
+				<td data-value="{{gamma.energy_order}}">
+					{{gamma.energy|safe}}
+				</td>
+				<td data-value="{{gamma.yeild_order}}">
+					{{gamma.yeild|safe}}{%if gamma.has_footnote %}<sup><span class="glyphicon glyphicon-asterisk"></span></sup>{% endif %}
+				</td>
+				<td class="hidden-phone">
+					{{gamma.mode|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% if gamma_footnote %}
+	<sup><span class="glyphicon glyphicon-asterisk"></span></sup> Relative intensity
+	{% endif %}
+</div>
+{% endif %}
+
+{% if xray_data|length > 0 %}
+<div class="well">
+<h3>X-rays from {{nuclide_pretty|safe}} ({{halflife|safe}})</h3>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th data-defaultsort="desc">Energy (keV)</th>
+				<th>Intensity (%)</th>
+				<th>Assignment</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for xray in xray_data %}
+			<tr>
+				<td>
+					{{xray.energy}}
+				</td>
+				<td data-value="{{xray.yeild_order}}">
+					{{xray.yeild|safe}}
+				</td>
+				<td class="hidden-phone">
+					{{xray.assignment|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+
+{% if beta_data|length > 0 %}
+<div class="well">
+<h3>&#946; from {{nuclide_pretty|safe}} ({{halflife|safe}})</h3>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th data-defaultsort="desc">Max energy (keV)</th>
+				<th>Intensity (%)</th>
+				<th class="hidden-phone">Decay mode</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for beta in beta_data %}
+			<tr>
+				<td data-value="{{beta.energy_order}}">
+					{{beta.energy}}
+				</td>
+				<td data-value="{{beta.yeild_order}}">
+					{{beta.yeild|safe}}
+				</td>
+				<td class="hidden-phone">
+					{{beta.mode|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+
+{% if alpha_data|length > 0 %}
+<div class="well">
+<h3>&#945; from {{nuclide_pretty|safe}} ({{halflife|safe}})</h3>
+	<table class="table table-striped sortable">
+		<thead>
+			<tr>
+				<th data-defaultsort="desc">Energy (keV)</th>
+				<th>Intensity (%)</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for alpha in alpha_data %}
+			<tr>
+				<td data-value="{{alpha.energy_order}}">
+					{{alpha.energy|safe}}
+				</td>
+				<td data-value="{{alpha.yeild_order}}">
+					{{alpha.yeild|safe}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block end_script%}
+
+<script>
+var recent_names_array = new Array();
+var recent_ids_array = new Array();
+var c_nucl_exist = false;
+var c_nuclide_pos = 0;
+for (var i = 0; i < 5; i++) {
+	if (localStorage.getItem("recent_name_" + i) == null) {
+		break;
+	} else {
+		if (localStorage.getItem("recent_id_" + i) != "{{iZA}}") {
+			recent_names_array.push(localStorage.getItem("recent_name_" + i));
+			recent_ids_array.push(localStorage.getItem("recent_id_" + i));
+		}
+	}
+}
+recent_names_array.splice(0, 0, "{{nuclide}}");
+recent_ids_array.splice(0, 0, "{{iZA}}");
+
+for (var i = 0; i < recent_ids_array.length; i++) {
+	localStorage.setItem("recent_name_" + i, recent_names_array[i]);
+	localStorage.setItem("recent_id_" + i, recent_ids_array[i]);
+}
+</script>
+
+{% endblock %}
+

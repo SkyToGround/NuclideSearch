@@ -1,0 +1,17 @@
+-Advanced search fixes
+--Search on mobiles
+--Various buggs
+--Add X-ray search
+--Search a subset of nuclides (popular) (low priority)
+--Relative intensity of alpha and beta radiation
+-Add popular nucldies functionality (low priority)
+-Links to ENDSF data
+-Referenses to ENSDF data
+-Links to TOI, check if allowed first (http://www.wiley-vch.de/books/info/0-471-35633-6/toi99/toi99cd.pdf)
+-Page links to types of radiation
+-Add unit tests
+-Add 404 and 500 error pages
+-Page caching (very low priority)
+-Add help
+-Check and fix decay chain data
+-Re create database

@@ -1,0 +1,12 @@
+
+#sidebar.affix-top {
+	position: static;
+	margin-top:20px;
+	width:150px;
+}
+  
+#sidebar.affix {
+	position: fixed;
+	top:60px;
+	width:150px;
+}
