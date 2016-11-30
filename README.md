@@ -19,7 +19,7 @@ The nuclide data can then be imported using the `legacy_importer.py` script.
 
 For running the application under a proper webserver, take a look at the official [Django documentation](https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/modwsgi/). To test the application run:
 
-    python3.5 manage.py runserver
+    python manage.py runserver
 
 ## Known bugs
 Many. Some of them are listed in the `ToDo.txt` file.
