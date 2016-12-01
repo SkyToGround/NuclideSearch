@@ -3,3 +3,5 @@
 *.sql3
 *.mdb
 collected_static/*
+*.wpr
+*.wpu

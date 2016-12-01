@@ -53,8 +53,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'Data',
-	'ShowNuclide',
+    'Data',
+    'ShowNuclide',
     'Index',
     'Search',
     'AdvSearch',
@@ -80,14 +80,15 @@ TEMPLATES = [
         'DIRS': [os.path.join(BASE_DIR, 'global_templates/'),],
         'APP_DIRS': True,
         'OPTIONS': {
+            'debug': True,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
+                ],
+            },
         },
-    },
 ]
 
 WSGI_APPLICATION = 'NuclideSearchSite.wsgi.application'
@@ -99,7 +100,7 @@ WSGI_APPLICATION = 'NuclideSearchSite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'NuclearData_db.sql3'),
+        'NAME': os.path.join(BASE_DIR, 'NuclideData.sql3'),
     }
 }
 
@@ -110,16 +111,16 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
+        },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
+        },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
+        },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+        },
 ]
 
 
