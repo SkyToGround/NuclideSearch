@@ -19,10 +19,17 @@
 
 from django.core.management.base import BaseCommand, CommandError
 import glob
+from Data.management.commands._References import import_references
 
 def parse_block(block):
     lines = block.split("\n")
-    print(lines[0])
+    first_line = lines[0]
+    if (first_line.find("COMMENTS")>= 0):
+        print("Ignoring file comments in ensdf file.")
+    elif (first_line.find("REFERENCES") >= 0):
+        import_references(lines)
+    else:
+        print("Unknown ENSDF block:" + first_line)
 
 class Command(BaseCommand):
     help = 'Import ENSDF data.'

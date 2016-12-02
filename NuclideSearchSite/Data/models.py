@@ -121,7 +121,7 @@ class Status(models.Model):
         return unicode(self.DatabaseID)
 
 class References(models.Model):
-    RefKey = models.CharField(null = False, max_length = 10)
+    RefKey = models.CharField(null = False, max_length = 10, primary_key = True, unique = True)
     Title = models.CharField(max_length = 100)
     Authors = models.CharField(max_length = 200)
     Publication = models.CharField(max_length = 100)
