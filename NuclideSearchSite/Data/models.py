@@ -84,21 +84,39 @@ class XIntensities(models.Model):
     Int = models.FloatField()
     IntStr = models.CharField(max_length = 100)
 
-class Parents(models.Model):
+########################################################################
+class History(models.Model):
+    FULL = 'FU'
+    UPDATE = 'UD'
+    TYPE_CHOICES = ((FULL, 'Full'), (UPDATE, 'Update'),)
+    HistoryType = models.CharField(max_length=2, choices=TYPE_CHOICES, default=FULL,)
+    Author = models.CharField(max_length = 100)
+    Citation = models.CharField(max_length = 100)
+    CutOff = models.DateField()
+    Comment = models.CharField(max_length = 100)
+
+class Nuclide(models.Model):
+    Com = models.TextField()
     A = models.IntegerField(null = False)
     Z = models.IntegerField(null = False)
     Symb = models.CharField(max_length = 4, null = False)
-    iZA = models.BigIntegerField(null = False)
-    El = models.FloatField(null = True)
-    ElStr = models.CharField(max_length = 46)
-    TSek = models.FloatField(null = True)
-    TStr = models.CharField(max_length = 74)
-    JPi = models.CharField(max_length = 56)
-    Abund = models.FloatField(null = True)
-    AbundStr = models.CharField(max_length = 54)
-    SnStr = models.CharField(max_length = 100)
-    SpStr = models.CharField(max_length = 100)
+    iZA = models.BigIntegerField(null = False, primary_key = True, unique = True)
+    Q = models.FloatField(null = True)
+    QSA = models.FloatField(null = True)
+    QRef = models.CharField(max_length = 10)
+    QCom = models.CharField(max_length = 500)
+    Sn = models.FloatField(null = True)
+    Sp = models.FloatField(null = True)
+    History = models.ManyToManyField(History)
 
+    def __unicode__(self):
+        return unicode(self.Symb) + u"-" + unicode(self.A)
+
+class Parents(models.Model):
+    Comments = models.CharField(max_length = 400)
+    A = models.IntegerField(null = False)
+    Z = models.IntegerField(null = False)
+    iZA = models.BigIntegerField(null = False, primary_key = True, unique = True)
     def __unicode__(self):
         return unicode(self.Symb) + u"-" + unicode(self.A)
 

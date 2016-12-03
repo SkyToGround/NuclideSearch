@@ -38,14 +38,14 @@ def iZA_to_Z(iZA):
 	return iZA // 10000
 
 def iZA_to_string(iZA):
-	A = iZA // 10000
-	Z = (iZA - A * 10000) % 300
-	m = (iZA - A * 10000) // 300
+	Z = iZA // 10000
+	A = (iZA - Z * 10000) % 300
+	m = (iZA - Z * 10000) // 300
 	if (m == 1):
-		return names[A] + "-" + str(Z) + "m"
+		return names[Z] + "-" + str(A) + "m"
 	elif (m > 1):
-		return names[A] + "-" + str(Z) + "m" + str(m)
-	return names[A] + "-" + str(Z)
+		return names[Z] + "-" + str(A) + "m" + str(m)
+	return names[Z] + "-" + str(A)
 
 def iZA_to_html(iZA):
 	A = iZA // 10000
