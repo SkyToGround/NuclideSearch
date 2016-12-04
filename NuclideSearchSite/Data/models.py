@@ -86,14 +86,32 @@ class XIntensities(models.Model):
 
 ########################################################################
 class History(models.Model):
-    FULL = 'FU'
-    UPDATE = 'UD'
-    TYPE_CHOICES = ((FULL, 'Full'), (UPDATE, 'Update'),)
-    HistoryType = models.CharField(max_length=2, choices=TYPE_CHOICES, default=FULL,)
+    FULL = 'FUL'
+    UPDATE = 'UPD'
+    FORMAT = "FMT"
+    ERROR = "ERR"
+    MODIFIED = "MOD"
+    EXPERIMENTAL = "EXP"
+    TYPE_CHOICES = ((FULL, 'Full'), (UPDATE, 'Update'), (FORMAT, "Format"), (ERROR, "Errata"), (MODIFIED, "Modified"), (EXPERIMENTAL, "Experimental"))
+    HistoryType = models.CharField(max_length=3, choices=TYPE_CHOICES,)
     Author = models.CharField(max_length = 100)
     Citation = models.CharField(max_length = 100)
-    CutOff = models.DateField()
-    Comment = models.CharField(max_length = 100)
+    Date = models.DateField(null = True)
+    CutOff = models.DateField(null = True)
+    Comments = models.CharField(max_length = 100, default = "")
+
+########################################################################
+class Q_Record(models.Model):
+    Qb = models.FloatField(null = True)
+    QbSA = models.FloatField(null = True)
+    Sn = models.FloatField(null = True)
+    SnSA = models.FloatField(null = True)
+    Sp = models.FloatField(null = True)
+    SpSA = models.FloatField(null = True)
+    Qa = models.FloatField(null = True)
+    QaSA = models.FloatField(null = True)    
+    Reference = models.CharField(max_length = 10, default = "")
+    Comments = models.CharField(max_length = 100, default = "")
 
 class Nuclide(models.Model):
     Com = models.TextField()
@@ -101,19 +119,13 @@ class Nuclide(models.Model):
     Z = models.IntegerField(null = False)
     Symb = models.CharField(max_length = 4, null = False)
     iZA = models.BigIntegerField(null = False, primary_key = True, unique = True)
-    Q = models.FloatField(null = True)
-    QSA = models.FloatField(null = True)
-    QRef = models.CharField(max_length = 10)
-    QCom = models.CharField(max_length = 500)
-    Sn = models.FloatField(null = True)
-    Sp = models.FloatField(null = True)
     History = models.ManyToManyField(History)
-
+    QRec = models.ManyToManyField(Q_Record)
     def __unicode__(self):
         return unicode(self.Symb) + u"-" + unicode(self.A)
 
 class Parents(models.Model):
-    Comments = models.CharField(max_length = 400)
+    Comments = models.CharField(max_length = 400, default = "")
     A = models.IntegerField(null = False)
     Z = models.IntegerField(null = False)
     iZA = models.BigIntegerField(null = False, primary_key = True, unique = True)

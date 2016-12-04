@@ -20,7 +20,7 @@
 from django.core.management.base import BaseCommand, CommandError
 import glob
 from Data.management.commands._References import import_references
-from Data.management.commands._AdoptedLevels import import_adopted_levels
+from Data.management.commands._AdoptedLevels import *
 
 def parse_block(block):
     lines = block.split("\n")
@@ -28,11 +28,13 @@ def parse_block(block):
     if (first_line.find("COMMENTS")>= 0):
         print("Ignoring file comments in ensdf file.")
     elif (first_line.find("REFERENCES") >= 0):
-        import_references(lines)
+        pass
+        #import_references(lines)
     elif (first_line.find("ADOPTED LEVELS") >= 0):
-        import_adopted_levels(lines)    
+        tst = RecordImporter(lines)
     else:
         print("Unknown ENSDF block:" + first_line)
+    pass
 
 class Command(BaseCommand):
     help = 'Import ENSDF data.'
