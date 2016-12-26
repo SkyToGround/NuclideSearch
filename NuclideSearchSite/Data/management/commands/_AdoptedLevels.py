@@ -39,6 +39,14 @@ def ToFloat(string):
 		return None
 	return float(string)
 
+#----------------------------------------------------------------------
+def ToStr(string):
+	string = string.strip()
+	if (len(string) == 0):
+		return None
+	return string
+	
+
 def LineNr(char):
 	comp_str = " 23456789ABCDEFGHIJKLMNOPQR"
 	if (len(char) != 1):
@@ -235,7 +243,19 @@ class RecordImporter(object):
 				break
 	#----------------------------------------------------------------------
 	def ParseLevelData(self, lvl_lines, lvl_com):
-		pass
+		lvl = lvl_lines[0]
+		E = ToFloat(lvl[0:10])
+		DE = ToFloat(lvl[10:22])
+		J = ToStr(lvl[22:30])
+		T, DT = ParseHalfLife(lvl[30:40], lvl[40:46])
+		L = ToStr(lvl[46:55])
+		S = ToStr(lvl[55:65])
+		DS = ToStr(lvl[65:67])
+		C = ToStr(lvl[67])
+		MS = ToStr(lvl[68:70])
+		if (L != None or S != None or DS != None or C != None or MS != None):
+			raise Exception(self.MakeErrStr("ParseLevelData(): This part needs to be implemented."))
+		Q = ToStr(lvl[70])
 		
 	
 	#----------------------------------------------------------------------

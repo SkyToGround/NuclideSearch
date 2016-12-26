@@ -113,6 +113,15 @@ class Q_Record(models.Model):
     Reference = models.CharField(max_length = 10, default = "")
     Comments = models.CharField(max_length = 100, default = "")
 
+########################################################################
+class Level(models.Model):
+    E = models.FloatField()
+    ESA = models.FloatField()
+    J = models.CharField(max_length = 8, default = "")
+    HalfLife = models.FloatField(null = True)
+    HalfLifeSA = models.FloatField(null = True)
+    
+
 class Nuclide(models.Model):
     Com = models.TextField()
     A = models.IntegerField(null = False)
