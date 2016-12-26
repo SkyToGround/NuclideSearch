@@ -23,6 +23,8 @@ from Data.management.commands._References import import_references
 from Data.management.commands._AdoptedLevels import *
 
 def parse_block(block):
+    if (len(block) == 0):
+        return
     lines = block.split("\n")
     first_line = lines[0]
     if (first_line.find("COMMENTS")>= 0):
@@ -45,13 +47,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         file_names = glob.glob(options["ensdf_path"][0] + "/*")
         for c_name in file_names:
-            in_file = open(c_name)
-            in_data = in_file.read()
-            in_file.close()
-            data_blocks = None
-            if (in_data.find("\n\n") >= 0):
-                data_blocks = in_data.split("\n")
-            else:
-                data_blocks = in_data.split("\n" + 80 * " " + "\n")
-            for block in data_blocks:
-                parse_block(block)
+            try:
+                in_file = open(c_name)
+                in_data = in_file.read()
+                in_file.close()
+                data_blocks = None
+                if (in_data.find("\n\n") >= 0):
+                    data_blocks = in_data.split("\n")
+                else:
+                    data_blocks = in_data.split("\n" + 80 * " " + "\n")
+                for block in data_blocks:
+                    parse_block(block)
+            except IsADirectoryError as e:
+                pass

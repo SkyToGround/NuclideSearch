@@ -72,6 +72,7 @@ class RecordImporter(object):
 		self.ReadLevelsComments()
 		self.ReadQRecords()
 		self.ReadCrossReferences()
+		self.ReadLevels()
 	
 	#----------------------------------------------------------------------
 	def MakeErrStr(self, error_str):
@@ -136,26 +137,26 @@ class RecordImporter(object):
 		c_ctr = 0
 		c_re = "^\s{0,2}((\d{1,3})([A-Z]{1,2}))( |[2-9A-Z])" + rec_type + "(.*)$"
 		while (True):
+			if (self.line_ctr == len(self.lines)):
+				return c_str
 			re_res = re.match(c_re, self.lines[self.line_ctr])
 			if (None == re_res):
-				if (c_str != None):
-					return c_str
-				else:
-					return None
+				return c_str
 			if (re_res.group(1) != self.nuc_str):
-				raise Exception(self.MakeErrStr("GetConfRecord(): Nuclide string does not match header."))			
+				raise Exception(self.MakeErrStr("GetContRecord(): Nuclide string does not match header."))			
 			c_line_nr = LineNr(re_res.group(4))
-			if (c_line_nr == c_ctr):
+			if (re_res.group(4) == " " and c_ctr > 0):
+				return c_str
+			else:
 				if (c_ctr != 0):
 					c_str += (" " + re_res.group(5).rstrip())
 				else:
 					c_str = re_res.group(5).rstrip()
+				if (c_line_nr != c_ctr):
+					print(self.MakeErrStr("GetContRecord(): Incorrect line number."))				
 				self.line_ctr += 1
 				c_ctr += 1
-			elif (c_line_nr == 0):
-				return c_str
-			else:
-				raise Exception(self.MakeErrStr("GetConfRecord(): Incorrect line number."))
+				
 	
 	#----------------------------------------------------------------------
 	def GetSingleRecord(self, rec_type):
@@ -185,6 +186,15 @@ class RecordImporter(object):
 		return all_comments
 	
 	#----------------------------------------------------------------------
+	def GetCommentLinesList(self, rec_type):
+		ret_list = []
+		c_str = self.GetContRecord(rec_type)
+		while (None != c_str):
+			ret_list.append(c_str)
+			c_str = self.GetContRecord(rec_type)		
+		return all_comments	
+	
+	#----------------------------------------------------------------------
 	def GetSeveralLines(self, rec_type):
 		rec_line = 0
 		c_re = "^\s{0,2}((\d{1,3})([A-Z]{1,2}))( |[2-9A-Z])" + rec_type + "(.*)$"
@@ -206,6 +216,7 @@ class RecordImporter(object):
 			rec_line += 1
 			self.line_ctr += 1
 			ret_lines.append(re_res.group(5))
+			re_res = re.match(c_re, self.lines[self.line_ctr])
 		return ret_lines
 	
 	#----------------------------------------------------------------------
@@ -241,6 +252,14 @@ class RecordImporter(object):
 				self.line_ctr += 1
 			else:
 				break
+	
+	#----------------------------------------------------------------------
+	def SortComments(self, comment_list):
+		ret_dict = {}
+		
+		return ret_dict
+		
+	
 	#----------------------------------------------------------------------
 	def ParseLevelData(self, lvl_lines, lvl_com):
 		lvl = lvl_lines[0]
@@ -261,10 +280,11 @@ class RecordImporter(object):
 	#----------------------------------------------------------------------
 	def ReadLevels(self):
 		lvl_lines = self.GetSeveralLines(" L ")
-		lvl_com = self.GetCommentLines("[cC]L ")
+		lvl_com = self.GetCommentLinesList("[cC]L ")
 		
 		while (lvl_lines != None):
-			lvl_lines = self.GetSeveralLines(" L ")
+			self.ParseLevelData(lvl_lines, lvl_com)
+			lvl_lines = self.GetSeveralLinesList(" L ")
 			lvl_com = self.GetCommentLines("[cC]L ")			
 		
 
