@@ -114,13 +114,32 @@ class Q_Record(models.Model):
     Comments = models.CharField(max_length = 100, default = "")
 
 ########################################################################
+class ContinuationField(models.Model):
+    TYPE = models.CharField(max_length = 10)
+    VAL = models.FloatField()
+    VAL_SA = models.FloatField(null = True)
+    Comments = models.CharField(max_length = 500, default = "")
+    Ref = models.CharField(max_length = 100, null = True)
+
+########################################################################
 class Level(models.Model):
     E = models.FloatField()
-    ESA = models.FloatField()
+    ESA = models.FloatField(null = True)
+    E_Com = models.CharField(max_length = 500, default = "")
     J = models.CharField(max_length = 8, default = "")
+    J_Com = models.CharField(max_length = 500, default = "")
     HalfLife = models.FloatField(null = True)
     HalfLifeSA = models.FloatField(null = True)
-    
+    HalfLife_EV = models.BooleanField(default = False)
+    HalfLife_Com = models.CharField(max_length = 500, default = "")
+    L = models.CharField(max_length = 8, default = "", null = True)
+    L_Com = models.CharField(max_length = 500, default = "", null = True)
+    S = models.FloatField(null = True)
+    SSA = models.FloatField(null = True)
+    S_Com = models.CharField(max_length = 500, default = "", null = True)
+    Uncertain = models.CharField(max_length = 1, default = "", null = True)
+    Comments = models.CharField(max_length = 500, default = "", null = True)
+    ExtraFields = models.ManyToManyField(ContinuationField)
 
 class Nuclide(models.Model):
     Com = models.TextField()

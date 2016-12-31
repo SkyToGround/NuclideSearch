@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from Data.models import Nuclide, History, Q_Record
+from Data.models import Nuclide, History, Q_Record, Level, ContinuationField
 import re
 from datetime import date, datetime
 
@@ -56,6 +56,39 @@ def LineNr(char):
 		raise Exception("LineNr(): Unable to find character in line number list.")
 	return pos
 
+#----------------------------------------------------------------------
+def CalcUncValue(valueStr, uncStr):
+	value_re = "\d*(?:.(\d+))?([eE][+-]?\d+)?"
+	res = re.match(value_re, valueStr)
+	mod1 = 1.0
+	mod2 = 1.0
+	if (res.group(1) != None):
+		mod1 = (10.0)**len(res.group(1))
+	if (res.group(2) != None):
+		mod2 = float("1" + res.group(2))
+	return (float(valueStr) / mod1) * mod2
+	
+
+#----------------------------------------------------------------------
+def ParseHalfLife(hl_part, unc_part):
+	hl_part = hl_part.strip()
+	if (len(hl_part )== 0):
+		return None, None, False
+	hl_re = "((?:STABLE)|\d+(?:.\d+)?(?:[eE][+-]?\d+)?)(?: ([a-zA-Z]+))?"
+	value_mod = {"Y":3600*24*365.25, "D":3600*24, "H":3600, "M":60, "S":1, "MS":1e-3, "US":1e-6, "NS":1e-9, "PS":1e-12, "FS":1e-15, "AS":1e-18, "EV":1, "KEV":1e3, "MEV":1e6}
+	res = re.match(hl_re, hl_part)
+	if (res.group(1) == "STABLE"):
+		return 0, None, False
+	hl_value = float(res.group(1)) * value_mod[res.group(2)]
+	SA = CalcUncValue(res.group(1), unc_part)
+	if (SA != None):
+		SA *= value_mod[res.group(2)]
+	isEV = False
+	if (res.group(2) in ["EV", "KEV", "MEV"]):
+		isEV = True
+	return hl_value, SA, isEV
+	
+
 ########################################################################
 class RecordImporter(object):
 	#----------------------------------------------------------------------
@@ -73,6 +106,16 @@ class RecordImporter(object):
 		self.ReadQRecords()
 		self.ReadCrossReferences()
 		self.ReadLevels()
+	
+	#----------------------------------------------------------------------
+	def GetLine(self):
+		if (self.line_ctr >= len(self.lines)):
+			return ""
+		return self.lines[self.line_ctr]
+	
+	#----------------------------------------------------------------------
+	def IncLineCtr(self):
+		self.line_ctr += 1
 	
 	#----------------------------------------------------------------------
 	def MakeErrStr(self, error_str):
@@ -192,31 +235,31 @@ class RecordImporter(object):
 		while (None != c_str):
 			ret_list.append(c_str)
 			c_str = self.GetContRecord(rec_type)		
-		return all_comments	
+		return ret_list	
 	
 	#----------------------------------------------------------------------
 	def GetSeveralLines(self, rec_type):
 		rec_line = 0
 		c_re = "^\s{0,2}((\d{1,3})([A-Z]{1,2}))( |[2-9A-Z])" + rec_type + "(.*)$"
 		ret_lines = []
-		re_res = re.match(c_re, self.lines[self.line_ctr])
+		re_res = re.match(c_re, self.GetLine())
 		if (re_res != None):
 			if (LineNr(re_res.group(4)) == 0):
 				ret_lines.append(re_res.group(5))
-				self.line_ctr += 1
+				self.IncLineCtr()
 				rec_line += 1
 		else:
 			return None
-		re_res = re.match(c_re, self.lines[self.line_ctr])
+		re_res = re.match(c_re, self.GetLine())
 		while (None != re_res):
 			if (re_res.group(4) == " "):
 				return ret_lines			
 			if (LineNr(re_res.group(4)) != rec_line):
 				print(self.MakeErrStr("GetSeveralLines(): Got incorrect record line number."))
 			rec_line += 1
-			self.line_ctr += 1
+			self.IncLineCtr()
 			ret_lines.append(re_res.group(5))
-			re_res = re.match(c_re, self.lines[self.line_ctr])
+			re_res = re.match(c_re, self.GetLine())
 		return ret_lines
 	
 	#----------------------------------------------------------------------
@@ -255,18 +298,51 @@ class RecordImporter(object):
 	
 	#----------------------------------------------------------------------
 	def SortComments(self, comment_list):
+		if (comment_list == None):
+			return {}
 		ret_dict = {}
-		
+		for com in comment_list:
+			dollar_pos = com.find("$")
+			if (dollar_pos > 0):
+				com_var = com[:dollar_pos]
+				used_comment = com[dollar_pos + 1:].strip()
+			else:
+				com_var = "other"
+				used_comment = com
+			if com_var in ret_dict:
+				ret_dict[com_var] += ("\n" + used_comment)
+			else:
+				ret_dict[com_var] = used_comment			
 		return ret_dict
 		
+	#----------------------------------------------------------------------
+	def ParseContinuationField(self, fieldStr):
+		cont_re = "([%A-Z0-9+-]+)=([+-]?\d+.\d+(?:[eE][+-]?\d+)?)(?: (\d+))?(?: \(([A-Z0-9,]+)\))?"
+		strParts = fieldStr.split("$")
+		ret_list = []
+		for part in strParts:
+			part = part.strip()
+			if (len(part) == 0):
+				continue
+			res = re.match(cont_re, part)
+			if (res == None):
+				raise Exception(self.MakeErrStr("ParseContinuationField(): Unable to match regular expression."))
+			SA = None
+			if (res.group(3) != None):
+				SA = float(res.group(3))
+			extraField = ContinuationField(TYPE = res.group(1), VAL = float(res.group(2)), VAL_SA = SA, Ref = res.group(4))
+			extraField.save()
+			print("ParseContinuationField(): Uncertainty in extra fields are not calculated correct.")
+			ret_list.append(extraField)
+		return ret_list
 	
 	#----------------------------------------------------------------------
 	def ParseLevelData(self, lvl_lines, lvl_com):
 		lvl = lvl_lines[0]
 		E = ToFloat(lvl[0:10])
-		DE = ToFloat(lvl[10:22])
-		J = ToStr(lvl[22:30])
-		T, DT = ParseHalfLife(lvl[30:40], lvl[40:46])
+		DE = ToFloat(lvl[10:12])
+		J = ToStr(lvl[12:30])
+		T, DT, isEV = ParseHalfLife(lvl[30:40], lvl[40:46])
 		L = ToStr(lvl[46:55])
 		S = ToStr(lvl[55:65])
 		DS = ToStr(lvl[65:67])
@@ -276,6 +352,39 @@ class RecordImporter(object):
 			raise Exception(self.MakeErrStr("ParseLevelData(): This part needs to be implemented."))
 		Q = ToStr(lvl[70])
 		
+		extra_fields = []
+		for i in range (1, len(lvl_lines)):
+			extra_fields += self.ParseContinuationField(lvl_lines[i])
+		
+		cLevel = Level(E = E, ESA = DE, J = J, HalfLife = T, HalfLifeSA = DT, HalfLife_EV = isEV, L = L, S = S, SSA = DS, Uncertain = Q)
+		cLevel.save()
+		cLevel.ExtraFields.add(*extra_fields)
+		sorted_comments = self.SortComments(lvl_com)
+		for com_key in sorted_comments:
+			if (com_key == "E"):
+				cLevel.E_Com = sorted_comments[com_key]
+			elif (com_key == "J"):
+				cLevel.J_Com = sorted_comments[com_key]
+			elif (com_key == "T"):
+				cLevel.HalfLife_Com = sorted_comments[com_key]
+			elif (com_key == "L"):
+				cLevel.L_Com = sorted_comments[com_key]
+			elif (com_key == "S"):
+				cLevel.S_Com = sorted_comments[com_key]
+			elif (com_key == "other"):
+				cLevel.Comments = sorted_comments[com_key]
+			else:
+				found = False
+				for extr in extra_fields:
+					if (extr.TYPE == com_key):
+						extr.Comments = sorted_comments[com_key]
+						extr.save()
+						found = True
+						break
+				if (not found):
+					raise Exception(self.MakeErrStr("ParseLevelData(): Unable to determine comment type."))
+		cLevel.save()
+		
 	
 	#----------------------------------------------------------------------
 	def ReadLevels(self):
@@ -284,7 +393,7 @@ class RecordImporter(object):
 		
 		while (lvl_lines != None):
 			self.ParseLevelData(lvl_lines, lvl_com)
-			lvl_lines = self.GetSeveralLinesList(" L ")
+			lvl_lines = self.GetSeveralLines(" L ")
 			lvl_com = self.GetCommentLines("[cC]L ")			
 		
 
