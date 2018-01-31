@@ -27,12 +27,12 @@ def parse_block(block):
         return
     lines = block.split("\n")
     first_line = lines[0]
-    if (first_line.find("COMMENTS")>= 0):
+    if ("COMMENTS" in first_line):
         print("Ignoring file comments in ensdf file.")
-    elif (first_line.find("REFERENCES") >= 0):
+    elif ("REFERENCES" in first_line):
         pass
         #import_references(lines)
-    elif (first_line.find("ADOPTED LEVELS") >= 0):
+    elif ("ADOPTED LEVELS" in first_line):
         tst = RecordImporter(lines)
     else:
         print("Unknown ENSDF block:" + first_line)

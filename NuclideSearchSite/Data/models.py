@@ -141,6 +141,17 @@ class Level(models.Model):
     Comments = models.CharField(max_length = 500, default = "", null = True)
     ExtraFields = models.ManyToManyField(ContinuationField)
 
+########################################################################
+class AdoptedLevels(models.Model):
+    A = models.IntegerField()
+    Z = models.IntegerField()
+    iZA = models.IntegerField()
+    symbol = models.CharField(max_length = 4)
+    comments = models.CharField(max_length = 500, default = "")
+    history = models.ManyToManyField(History)
+    Q = models.ManyToManyField(Q_Record)
+    levels = models.ManyToManyField(Level)
+
 class Nuclide(models.Model):
     Com = models.TextField()
     A = models.IntegerField(null = False)
