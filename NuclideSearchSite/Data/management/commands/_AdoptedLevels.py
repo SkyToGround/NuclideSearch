@@ -23,11 +23,6 @@ from datetime import date, datetime
 cap_symbols = ["NN","H", "HE","LI","BE","B", "C","N", "O", "F", "NE","NA","MG","AL","SI","P", "S", "CL","AR","K", "CA","SC","TI","V", "CR","MN","FE","CO","NI","CU","ZN","GA","GE","AS","SE","BR","KR","RB","SR","Y", "ZR","NB","MO","TC","RU","RH","PD","AG","CD","IN","SN","SB","TE","I", "XE","CS","BA","LA","CE","PR","ND","PM","SM","EU","GD","TB","DY","HO","ER","TM","YB","LU","HF","TA","W", "RE","OS","IR","PT","AU","HG","TL","PB","BI","PO","AT","RN","FR","RA","AC","TH","PA","U", "NP","PU","AM","CM","BK","CF","ES","FM","MD","NO","LR","RF","DB","SG","BH","HS","MT","DS","RG", "CN", "UUT", "FL", "UUP", "LV", "UUS", "UUO"]
 symbols = ["n","H", "He","Li","Be","B", "C","N", "O", "F", "Ne","Na","Mg","Al","Si","P", "S", "Cl","Ar","K", "Ca","Sc","Ti","V", "Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr","Y", "Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I", "Xe","Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W", "Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac","Th","Pa","U", "Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg", "Cn", "Uut", "Fl", "Uup", "Lv", "Uus", "Uuo"]
 
-#_ad_head_re = "^\s{0,2}((\d{1,3})([A-Z]{1,2}))\s{4,5}ADOPTED LEVELS\s+([0-9A-Z]+)\s+(\d{6})$"
-#_ad_head2_re = "^\s{0,2}(\d{1,3})([A-Z]{1,2})\s{4,5}ADOPTED LEVELS\s+([0-9A-Z]+)\s+(\d{6})$"
-#_hist_re = "^\s{0,2}((\d{1,3})([A-Z]{1,2}))( |[2-9A-Z]) H (.*)$"
-#_q_re = "^\s{0,2}((\d{1,3})([A-Z]{1,2}))( |[2-9A-Z]) H (.*)$"
-
 #----------------------------------------------------------------------
 def To_iZA(Z, A):
     return Z * 10000 + A
@@ -53,7 +48,7 @@ def LineNr(char):
         raise Exception("LineNr(): This function only takes a single character.")
     pos = comp_str.find(char)
     if (-1 == pos):
-        raise Exception("LineNr(): Unable to find character in line number list.")
+        print("LineNr(): Unable to find character in line number list.")
     return pos
 
 #----------------------------------------------------------------------
@@ -90,6 +85,9 @@ def ParseHalfLife(hl_part, unc_part):
 
 class LineInfo(object):
     def __init__(self, String):
+        if (len(String) == 0):
+            self.RecordType = None
+            return
         self.MassNumber = int(String[0:3].strip())
         self.Symbol = String[3:5].strip()
         self.ContNr = String[5]
@@ -97,7 +95,7 @@ class LineInfo(object):
         self.CommentChar = String[6]
         self.IsComment = self.CommentChar is "C" or self.CommentChar is "c"
         self.RecordType = String[7]
-        self.Data = String[8:].strip()
+        self.Data = String[9:].rstrip()
         self.NucLine = str(self.MassNumber) + self.Symbol
 
 ########################################################################
@@ -119,10 +117,9 @@ class RecordImporter(object):
             elif ("Q" is Line.RecordType):
                 self.ReadQRecords()
             elif (" " is Line.RecordType):
-                self.comments = self.ReadLevelsComments()
+                self.comments = self.ReadComments(" ")
             elif ("L" is Line.RecordType):
                 self.ReadLevels()
-                self.ReadLevelsComments()
             elif ("X" is Line.RecordType):
                 self.ReadCrossReferences()
             else:
@@ -167,7 +164,7 @@ class RecordImporter(object):
 
     #----------------------------------------------------------------------
     def ParseHistory(self, hist_str):
-        hist_parts = hist_str.split("$")
+        hist_parts = hist_str.strip().split("$")
         h_type = None
         h_auth = None
         h_date = None
@@ -175,8 +172,9 @@ class RecordImporter(object):
         h_com = ""
         h_cit = ""
         for part in hist_parts:
-            p1 = part[0:3]
-            p2 = part[4:]
+            CurrentPart = part.strip()
+            p1 = CurrentPart[0:3]
+            p2 = CurrentPart[4:]
             if ("TYP" == p1):
                 h_type = p2
             elif ("AUT" == p1):
@@ -208,28 +206,36 @@ class RecordImporter(object):
             c_str = self.GetContRecord("H")
 
     #----------------------------------------------------------------------
-    def GetContRecord(self, rec_type):
-        c_str = None
+    def GetContRecord(self, rec_type, AsList = False, IsComment = False):
+        ReturnValue = None
+        if (AsList):
+            ReturnValue = []
         c_ctr = 0
         while (True):
             if (self.line_ctr == len(self.lines)):
-                return c_str
+                return ReturnValue
             c_line = LineInfo(self.GetLine())
+            if ("X" is c_line.ContNr and not c_line.IsComment):
+                print("Skipping XREF in continuation")
+                self.IncLineCtr()
+                continue
 
-            if (c_line.RecordType != rec_type or (c_line.CommentChar == "C" or c_line.CommentChar == "c")):
-                return c_str
+            if (c_line.RecordType != rec_type or (c_line.IsComment and not IsComment)):
+                return ReturnValue
             if (c_line.NucLine != self.nuc_str):
                 raise Exception(self.MakeErrStr("GetContRecord(): Nuclide string does not match header."))
-            #c_line_nr = LineNr(cont_char)
-            if (cont_char == " " and c_ctr > 0):
-                return c_str
+            c_line_nr = LineNr(c_line.ContNr)
+            if (c_line.ContNr == " " and c_ctr > 0):
+                return ReturnValue
             else:
-                if (c_ctr != 0):
-                    c_str += (" " + rec_str)
+                if (c_ctr != 0 and not AsList):
+                    ReturnValue += (" " + c_line.Data)
+                elif (not AsList):
+                    ReturnValue = c_line.Data
                 else:
-                    c_str = rec_str
-                #if (c_line_nr != c_ctr):
-                    #print(self.MakeErrStr("GetContRecord(): Incorrect line number."))
+                    ReturnValue.append(c_line.Data)
+                if (c_line_nr != c_ctr):
+                    print(self.MakeErrStr("GetContRecord(): Incorrect line number."))
                 self.IncLineCtr()
                 c_ctr += 1
 
@@ -239,10 +245,10 @@ class RecordImporter(object):
         Line = LineInfo(self.GetLine())
         if (Line.RecordType != rec_type):
             raise Exception(self.MakeErrStr("GetSingleRecord(): Incorrect record type ({}/{}).".format(rec_type, Line.RecordType)))
-        if (Line.NucStr != self.nuc_str):
+        if (Line.NucLine != self.nuc_str):
             raise Exception(self.MakeErrStr("GetConfRecord(): Nuclide string does not match header."))
         self.line_ctr += 1
-        return self.GetLine()
+        return Line
 
     #----------------------------------------------------------------------
     def ReadComments(self, RecordType):
@@ -251,12 +257,12 @@ class RecordImporter(object):
     #----------------------------------------------------------------------
     def GetCommentLines(self, RecordType):
         all_comments = ""
-        c_str = self.GetContRecord(RecordType)
+        c_str = self.GetContRecord(RecordType, IsComment=True)
         while (None != c_str):
             if (len(all_comments) > 0):
                 all_comments += "\n"
             all_comments += c_str
-            c_str = self.GetContRecord(RecordType)
+            c_str = self.GetContRecord(RecordType, IsComment=True)
         return all_comments
 
     #----------------------------------------------------------------------
@@ -295,37 +301,31 @@ class RecordImporter(object):
 
     #----------------------------------------------------------------------
     def CreateQRecord(self, line, comments):
-        Q = ToFloat(line[0:10])
-        DQ = ToFloat(line[10:12])
-        SN = ToFloat(line[12:20])
-        DSN = ToFloat(line[20:22])
-        SP = ToFloat(line[22:30])
-        DSP = ToFloat(line[30:32])
-        QA = ToFloat(line[32:40])
-        DQA = ToFloat(line[40:46])
-        REF = line[46:].strip()
+        Q = ToFloat(line.Data[0:10])
+        DQ = ToFloat(line.Data[10:12])
+        SN = ToFloat(line.Data[12:20])
+        DSN = ToFloat(line.Data[20:22])
+        SP = ToFloat(line.Data[22:30])
+        DSP = ToFloat(line.Data[30:32])
+        QA = ToFloat(line.Data[32:40])
+        DQA = ToFloat(line.Data[40:46])
+        REF = line.Data[46:].strip()
         c_rec = Q_Record(Qb = Q, QbSA = DQ, Sn = SN, SnSA = DSN, Sp = SP, SpSA = DSP, Qa = QA, QaSA = DQA, Reference = REF, Comments = comments)
         c_rec.save()
         return c_rec
 
     #----------------------------------------------------------------------
     def ReadQRecords(self):
-        q_line = self.GetSingleRecord("Q")
-        c_com = self.GetCommentLines("[cC]Q ")
-        while (q_line != None):
-            self.q_records.append(self.CreateQRecord(q_line, c_com))
+        while (LineInfo(self.GetLine()).RecordType is "Q"):
             q_line = self.GetSingleRecord("Q")
-            c_com = self.GetCommentLines("[cC]Q ")
+            c_com = self.GetCommentLines("Q")            
+            self.q_records.append(self.CreateQRecord(q_line, c_com))
 
     #----------------------------------------------------------------------
     def ReadCrossReferences(self):
         print(self.MakeErrStr("ReadCrossReferences(): Skipping cross references."))
-        while(True):
-            c_line = self.lines[self.line_ctr]
-            if (c_line[6:9] == "  X"):
-                self.line_ctr += 1
-            else:
-                break
+        while(LineInfo(self.GetLine()).RecordType is "X"):
+            self.IncLineCtr()
 
     #----------------------------------------------------------------------
     def SortComments(self, comment_list):
@@ -348,7 +348,7 @@ class RecordImporter(object):
 
     #----------------------------------------------------------------------
     def ParseContinuationField(self, fieldStr):
-        cont_re = "([%A-Z0-9+-]+)=([+-]?\d+.\d+(?:[eE][+-]?\d+)?)(?: (\d+))?(?: \(([A-Z0-9,]+)\))?"
+        cont_re = "([%A-Z0-9+-]+)=([+-]?\d+.\d+(?:[eE][+-]?\d+)?)(?: (\d+))?(?: \(([A-Z0-9,?]+)\))?"
         strParts = fieldStr.split("$")
         ret_list = []
         for part in strParts:
@@ -363,13 +363,13 @@ class RecordImporter(object):
                 SA = float(res.group(3))
             extraField = ContinuationField(TYPE = res.group(1), VAL = float(res.group(2)), VAL_SA = SA, Ref = res.group(4))
             extraField.save()
-            print("ParseContinuationField(): Uncertainty in extra fields are not calculated correct.")
+            print("ParseContinuationField(): Uncertainty in extra fields are not calculated correctly.")
             ret_list.append(extraField)
         return ret_list
 
     #----------------------------------------------------------------------
     def ParseLevelData(self, lvl_lines, lvl_com):
-        lvl = lvl_lines[0]
+        lvl = lvl_lines[0].ljust(71)
         E = ToFloat(lvl[0:10])
         DE = ToFloat(lvl[10:12])
         J = ToStr(lvl[12:30])
@@ -419,12 +419,12 @@ class RecordImporter(object):
 
     #----------------------------------------------------------------------
     def ReadLevels(self):
-        lvl_lines = self.GetSeveralLines(" L ")
-        lvl_com = self.GetCommentLinesList("[cC]L ")
-
-        while (lvl_lines != None):
-            self.ParseLevelData(lvl_lines, lvl_com)
-            lvl_lines = self.GetSeveralLines(" L ")
-            lvl_com = self.GetCommentLines("[cC]L ")
+        BaseComments = ""
+        if (LineInfo(self.GetLine()).IsComment):
+            BaseComments = "\n" + self.GetCommentLines("L")
+        while (LineInfo(self.GetLine()).RecordType is "L"):
+            lvl_lines = self.GetContRecord("L", AsList=True)
+            lvl_com = self.GetCommentLines("L")
+            self.ParseLevelData(lvl_lines, lvl_com + BaseComments)
 
 

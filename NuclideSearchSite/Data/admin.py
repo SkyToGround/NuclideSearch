@@ -19,9 +19,19 @@
 from django.contrib import admin
 from Data.models import *
 
-admin.site.register(Alphas)
-admin.site.register(Betas)
-admin.site.register(Gammas)
-admin.site.register(Parents)
-admin.site.register(Parents2)
-admin.site.register(Status)
+# admin.site.register(Alphas)
+# admin.site.register(Betas)
+# admin.site.register(Gammas)
+# admin.site.register(Parents)
+# admin.site.register(Parents2)
+# admin.site.register(Status)
+
+admin.site.register(History)
+admin.site.register(Q_Record)
+admin.site.register(ContinuationField)
+admin.site.register(Level)
+admin.site.register(AdoptedLevels)
+admin.site.register(Nuclide)
+admin.site.register(References)
+admin.site.register(Production)
+admin.site.register(EvaluationCitation)

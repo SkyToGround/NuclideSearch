@@ -21,6 +21,9 @@ from django.conf.urls import url
 #admin.autodiscover()
 
 import Index.views, ShowNuclide.views, Search.views, About.views, AdvSearch.views, XRayAug.views
+
+from django.contrib import admin
+from django.urls import path
 #
 urlpatterns = [
     # Examples:
@@ -32,4 +35,5 @@ urlpatterns = [
     url(r'^adv_search/$', AdvSearch.views.search),
     url(r'^adv_search_res/$', AdvSearch.views.search_res),
     url(r'^aug_xray/([0-9]{1,3})/$', XRayAug.views.view_data),
+    path('admin/', admin.site.urls)
 ]

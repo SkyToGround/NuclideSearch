@@ -10,22 +10,18 @@ The application uses [Bootstrap](http://getbootstrap.com) for html layout and st
 
 The database required to run the application is (for various reasons) not included in this repository. If you have access to the original Microsoft Access database, its tables can be imported into the Django database using the `legacy_importer.py`-script. Note that this requires the `mdb-export` command line tool which is part of [mdbtools](https://github.com/brianb/mdbtools).
 
+## Importing ENSDF data
+To import ENSDF data into the database used by the web application, the following command has to be executed:
+
+    python manage.py ensdf_import PATH_TO_DIRECTORY
+
 ## Running the application
-The database needs to be in place and to create it `cd` to the *NuclideSearchSite* directory and run:
-
-    python manage.py migrate
-    
-The nuclide data can then be imported using the `legacy_importer.py` script.
-
 For running the application under a proper webserver, take a look at the official [Django documentation](https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/modwsgi/). To test the application run:
 
     python manage.py runserver
 
 ## Known bugs
 Many. Some of them are listed in the `ToDo.txt` file.
-
-## To-do
-One of the most important thins in the to-do list is to create an ENSDF parser and to modify the application to use this data instead.
 
 ## License
 All the files created through this project uses the GNU GPLv3 license. More information about GNU GPLv3 can be found in the `LICENSE.txt` file.
